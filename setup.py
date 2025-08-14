@@ -17,7 +17,7 @@ setup(
     name="claude-statusline",
     version="1.3.1",
     author="Ersin Koç",
-    author_email="ersinkoc@users.noreply.github.com",
+    author_email="ersinkoc@gmail.com",
     description="Real-time session tracking and analytics for Claude Code",
     long_description=long_description,
     long_description_content_type="text/markdown",
