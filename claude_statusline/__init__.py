@@ -7,7 +7,7 @@ cost tracking, usage analytics, and customizable statusline displays for
 Claude Code sessions.
 """
 
-__version__ = "1.3.2"
+__version__ = "1.3.3"
 __author__ = "Ersin Koç"
 __email__ = "ersinkoc@gmail.com"
 __license__ = "MIT"
