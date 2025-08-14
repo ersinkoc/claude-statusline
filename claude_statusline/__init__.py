@@ -9,7 +9,7 @@ Claude Code sessions.
 
 __version__ = "1.3.1"
 __author__ = "Ersin Koç"
-__email__ = "ersinkoc@users.noreply.github.com"
+__email__ = "ersinkoc@gmail.com"
 __license__ = "MIT"
 
 # Core imports (only import what actually exists)
