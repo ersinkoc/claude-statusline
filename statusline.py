@@ -28,6 +28,7 @@ from data_directory_utils import resolve_data_directory
 from instance_manager import InstanceManager
 from safe_file_operations import safe_json_read, safe_json_write
 from simple_visual_formatter import SimpleVisualFormatter
+from statusline_rotator import StatuslineRotator
 # from claude_native_formatter import ClaudeNativeFormatter
 # from system_startup import SystemStartupManager
 from console_utils import safe_print
@@ -77,6 +78,12 @@ class StatuslineDisplay:
         
         # Simple visual formatter for better compatibility
         self.simple_visual_formatter = SimpleVisualFormatter()
+        
+        # Rotating statusline for variety
+        self.statusline_rotator = StatuslineRotator(data_dir=self.data_dir)
+        
+        # Enable rotation based on config or environment
+        self.enable_rotation = self.config.get('display', {}).get('enable_rotation', False)
     
     def _ensure_live_tracker_running(self):
         """Ensure live session tracker is running as daemon"""
@@ -654,8 +661,13 @@ class StatuslineDisplay:
     def _format_session_display(self, session_data: Dict[str, Any]) -> str:
         """Format the main session display using appropriate formatter"""
         try:
-            # Always use simple visual formatter
-            return self.simple_visual_formatter.format_statusline(session_data)
+            # Check if rotation is enabled
+            if self.enable_rotation:
+                # Use rotating content
+                return self.statusline_rotator.get_rotated_content(session_data)
+            else:
+                # Use simple visual formatter
+                return self.simple_visual_formatter.format_statusline(session_data)
         
         except Exception as e:
             return self._format_error_display(f"Display error: {e}")

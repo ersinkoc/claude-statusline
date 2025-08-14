@@ -30,7 +30,6 @@ class SimpleVisualFormatter:
         """
         try:
             # Extract session info
-            session_number = session_data.get('session_number', '?')
             model_name = session_data.get('primary_model', 'Unknown')
             remaining_seconds = session_data.get('remaining_seconds', 0)
             message_count = session_data.get('message_count', 0)
@@ -41,40 +40,36 @@ class SimpleVisualFormatter:
             # Format components
             parts = []
             
-            # Session status with brackets
+            # Model and status
             model_short = self._format_model(model_name)
-            status_text = "LIVE" if is_active else "OFF"
-            session_part = f"[{model_short}] [{status_text}]"
-            parts.append(session_part)
+            if is_active:
+                parts.append(f"[{model_short}] LIVE")
+            else:
+                parts.append(f"[{model_short}] OFF")
             
-            # Time info with brackets
+            # Time info
             session_end_time = session_data.get('session_end_time')
             if session_end_time:
-                time_display = f"ends {session_end_time}"
-            else:
+                parts.append(f"~{session_end_time}")
+            elif remaining_seconds > 0:
                 time_display = self._format_time_remaining(remaining_seconds)
-            time_part = f"[{time_display}]"
-            parts.append(time_part)
+                parts.append(time_display)
+            else:
+                parts.append("EXPIRED")
             
-            # Usage info with clear separators
+            # Usage info with separator
             token_display = self._format_tokens(tokens)
-            usage_part = f"[{message_count}msg] [{token_display}] [${cost:.2f}]"
-            parts.append(usage_part)
+            parts.append("|")
+            parts.append(f"{message_count}msg")
+            parts.append(token_display)
             
-            # Context info
-            if self.current_dir:
-                context_part = f"[{self.current_dir[:12]}]"
-                if self.git_branch:
-                    git_display = self.git_branch[:8] if len(self.git_branch) > 8 else self.git_branch
-                    git_status = self._get_git_status()
-                    git_symbol = "*" if git_status != 'clean' else ""
-                    context_part += f"[{git_display}{git_symbol}]"
-                parts.append(context_part)
-            
-            # Current time
-            current_time = datetime.now().strftime("%H:%M")
-            time_part = f"[{current_time}]"
-            parts.append(time_part)
+            # Cost
+            if cost >= 100:
+                parts.append(f"${cost:.0f}")
+            elif cost >= 10:
+                parts.append(f"${cost:.1f}")
+            else:
+                parts.append(f"${cost:.2f}")
             
             return " ".join(parts)
             
@@ -82,7 +77,7 @@ class SimpleVisualFormatter:
             return f"[ERROR: {str(e)[:30]}]"
     
     def _format_model(self, model_name: str) -> str:
-        """Format model name for display from prices.json"""
+        """Format model name for display - readable but short"""
         if not model_name or model_name == 'Unknown':
             return 'Unknown'
         
@@ -96,7 +91,7 @@ class SimpleVisualFormatter:
                     prices = json.load(f)
                     models = prices.get('models', {})
                     if model_name in models:
-                        # Return the name from prices.json
+                        # Return the name from prices.json as-is
                         return models[model_name].get('name', model_name)
         except:
             pass
@@ -110,12 +105,11 @@ class SimpleVisualFormatter:
         elif 'haiku' in model_lower:
             return 'Haiku'
         else:
-            # Take first word and limit length
-            first_part = model_name.replace('claude-', '').split('-')[0]
-            return first_part[:8].title()
+            # Take first part
+            return model_name.replace('claude-', '').split('-')[0].title()
     
     def _format_time_remaining(self, remaining_seconds: int) -> str:
-        """Format remaining time"""
+        """Format remaining time - readable"""
         if remaining_seconds <= 0:
             return "EXPIRED"
         
@@ -123,18 +117,26 @@ class SimpleVisualFormatter:
         minutes = (remaining_seconds % 3600) // 60
         
         if hours > 0:
-            return f"{hours}h{minutes:02d}m"
+            return f"{hours}h {minutes}m"
         else:
-            return f"{minutes}m"
+            return f"{minutes}m left"
     
     def _format_tokens(self, tokens: int) -> str:
-        """Format token count with proper units"""
+        """Format token count - readable"""
         if tokens < 1000:
-            return f"{tokens}t"
+            return f"{tokens} tok"
         elif tokens < 1_000_000:
-            return f"{tokens/1000:.1f}K"
+            k_value = tokens/1000
+            if k_value < 100:
+                return f"{k_value:.1f}k"
+            else:
+                return f"{k_value:.0f}k"
         else:
-            return f"{tokens/1_000_000:.1f}M"
+            m_value = tokens/1_000_000
+            if m_value < 100:
+                return f"{m_value:.1f}M"
+            else:
+                return f"{m_value:.0f}M"
     
     def _get_git_branch(self) -> Optional[str]:
         """Get current git branch"""

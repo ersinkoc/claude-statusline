@@ -7,7 +7,9 @@
     "status_format": "compact",
     "visual_mode": false,
     "format_style": "standard",
-    "format_mode": "colorful"
+    "format_mode": "colorful",
+    "enable_rotation": false,
+    "rotation_interval": 10
   },
   "monitoring": {
     "session_duration_hours": 5,
