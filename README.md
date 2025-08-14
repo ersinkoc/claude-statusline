@@ -63,9 +63,9 @@ git clone https://github.com/ersinkoc/claude-statusline.git
 cd claude-statusline
 ```
 
-2. Install dependencies (if any):
+2. Install dependencies:
 ```bash
-pip install -r requirements.txt  # Currently uses only Python standard library
+pip install -r requirements.txt  # Only psutil is required
 ```
 
 3. Verify Claude Code data location:

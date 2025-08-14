@@ -1,0 +1,5 @@
+# Claude Statusline Dependencies
+# This project primarily uses Python standard library
+# Only one external dependency is required:
+
+psutil>=5.9.0  # For process management and PID checking
