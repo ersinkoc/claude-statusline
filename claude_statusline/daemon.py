@@ -327,6 +327,7 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description='Unified Daemon for Claude Statusline')
+    parser.add_argument('--start', action='store_true', help='Start daemon')
     parser.add_argument('--daemon', action='store_true', help='Run as daemon')
     parser.add_argument('--stop', action='store_true', help='Stop running daemon')
     parser.add_argument('--status', action='store_true', help='Show daemon status')
@@ -360,7 +361,7 @@ def main():
             print("Daemon is not running")
         return
         
-    if args.daemon or args.restart:
+    if args.start or args.daemon or args.restart:
         # Run as daemon
         if sys.platform == 'win32':
             # Windows: Run in background
@@ -368,7 +369,7 @@ def main():
                 # Detach from console
                 import subprocess
                 import time
-                cmd = [sys.executable, __file__, '--daemon', '--debug']
+                cmd = [sys.executable, '-c', 'from claude_statusline.daemon import main; main()', '--daemon', '--debug']
                 if args.data_dir:
                     cmd.extend(['--data-dir', args.data_dir])
                 
