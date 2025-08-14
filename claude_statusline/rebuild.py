@@ -18,8 +18,8 @@ if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
-from data_directory_utils import resolve_data_directory
-from safe_file_operations import safe_json_read, safe_json_write
+from .data_directory_utils import resolve_data_directory
+from .safe_file_operations import safe_json_read, safe_json_write
 
 
 class DatabaseRebuilder:

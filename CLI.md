@@ -4,541 +4,578 @@ Complete command-line interface documentation for Claude Statusline.
 
 ## Table of Contents
 
+- [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Command Structure](#command-structure)
 - [Core Commands](#core-commands)
-- [Reports & Analytics](#reports--analytics)
+- [Analyticlaude-statusline Commands](#analyticlaude-statusline-commands)
+- [Verification Commands](#verification-commands)
 - [Management Commands](#management-commands)
-- [Debugging Commands](#debugging-commands)
 - [Configuration](#configuration)
 - [Examples](#examples)
 - [Troubleshooting](#troubleshooting)
 
+## Installation
+
+```bash
+# Install from package
+pip install claude-statusline
+
+# Install from source
+git clone https://github.com/ersinkoc/claude-statusline.git
+cd claude-statusline
+pip install -e .
+
+# Install from built wheel
+pip install dist/claude_statusline-1.3.0-py3-none-any.whl
+```
+
 ## Quick Start
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
 # Show help
-python claude_statusline.py help
+claude-statusline --help
 
 # View current status
-python claude_statusline.py status
+claude-status  # Direct statusline display
+claude-statusline status
 
 # Start background daemon
-python claude_statusline.py daemon --daemon
+claude-statusline daemon --start
 
 # Generate daily report
-python claude_statusline.py daily
+claude-statusline daily
 ```
 
 ## Command Structure
 
-All commands follow this pattern:
+The package provides multiple entry points:
+
 ```bash
-python claude_statusline.py <category> <command> [options]
+# Main CLI interface
+claude-statusline <command> [options]
+
+# Direct commands
+claude-status           # Statusline display
+claude-daemon          # Daemon management
+claude-rebuild         # Database rebuild
+claude-template        # Template selector
 ```
-
-Or use shortcuts for common commands:
-```bash
-python claude_statusline.py <shortcut> [options]
-```
-
-### Available Shortcuts
-
-| Shortcut | Full Command | Description |
-|----------|-------------|-------------|
-| `status` | `core status` | Show current session status |
-| `daemon` | `core daemon` | Manage background daemon |
-| `rebuild` | `core rebuild` | Rebuild database |
-| `costs` | `reports costs` | Cost analysis report |
-| `daily` | `reports daily` | Daily usage report |
-| `sessions` | `reports sessions` | Session analysis |
-| `update-prices` | `manage update-prices` | Update model prices |
 
 ## Core Commands
 
 Essential commands for basic functionality.
 
-### `core status`
-Display current Claude Code session status in compact format.
+### `status`
+Display current Claude Code session status.
 
 ```bash
-python claude_statusline.py core status
+claude-statusline status
 ```
 
-**Output Format:**
+**Output Examples:**
 ```
-[Model] LIVE/OFF ~HH:MM | XXXmsg XX.XM $XXX.XX
+[Opus 4.1] LIVE ~17:00 | 727msg 65.9M $139.99
+[Sonnet 4] OFF | 1234msg 12.3M $45.67
 ```
 
-**Components:**
-- `[Model]`: Current model (Opus 4.1, Sonnet 4, etc.)
-- `LIVE/OFF`: Session active status
-- `~HH:MM`: Session end time
-- `XXXmsg`: Message count
-- `XX.XM`: Token usage (M=millions, k=thousands)
-- `$XXX.XX`: Total cost in USD
-
-### `core daemon`
+### `daemon`
 Manage the background daemon that processes JSONL files.
 
 ```bash
 # Start daemon
-python claude_statusline.py core daemon --daemon
+claude-statusline daemon --start
+claude-daemon --start
 
 # Check daemon status
-python claude_statusline.py core daemon --status
+claude-statusline daemon --status
 
 # Stop daemon
-python claude_statusline.py core daemon --stop
+claude-statusline daemon --stop
 
 # Restart daemon
-python claude_statusline.py core daemon --restart
+claude-statusline daemon --restart
 ```
 
 **Options:**
-- `--daemon`: Start daemon in background
-- `--status`: Show daemon status
-- `--stop`: Stop running daemon
-- `--restart`: Restart daemon
-- `--data-dir PATH`: Custom data directory
+- `--start`: Start the daemon
+- `--stop`: Stop the daemon
+- `--restart`: Restart the daemon
+- `--status`: Check daemon status
 
-### `core rebuild`
-Rebuild the session database from all JSONL files.
-
-```bash
-python claude_statusline.py core rebuild
-```
-
-**What it does:**
-1. Scans all Claude Code project directories
-2. Processes JSONL conversation files
-3. Rebuilds session database
-4. Updates cost calculations
-5. Detects active sessions
-
-**When to use:**
-- After manual JSONL file changes
-- To fix corrupted database
-- When historical data is missing
-
-## Reports & Analytics
-
-Generate various reports and analytics from session data.
-
-### `reports sessions`
-Detailed analysis of individual sessions.
+### `rebuild`
+Rebuild the database from JSONL files.
 
 ```bash
-python claude_statusline.py reports sessions
+claude-statusline rebuild
+claude-rebuild
 
-# Options
-python claude_statusline.py reports sessions --last 5
-python claude_statusline.py reports sessions --date 2025-01-14
-python claude_statusline.py reports sessions --model opus
+# Rebuild with verbose output
+claude-statusline rebuild --verbose
 ```
 
 **Options:**
-- `--last N`: Show last N sessions
-- `--date YYYY-MM-DD`: Sessions on specific date
-- `--model MODEL`: Filter by model type
-- `--export FILE`: Export to JSON file
+- `--verbose`: Show detailed progress
+- `--force`: Force rebuild even if recent
+- `--days N`: Process last N days only
 
-### `reports costs`
-Cost analysis breakdown by model and time period.
+## Analyticlaude-statusline Commands
+
+Generate reports and analyze usage patterns.
+
+### `sessions`
+Analyze session details and patterns.
 
 ```bash
-python claude_statusline.py reports costs
+claude-statusline sessions
 
-# Options
-python claude_statusline.py reports costs --period week
-python claude_statusline.py reports costs --by-model
-python claude_statusline.py reports costs --detailed
+# Show only today's sessions
+claude-statusline sessions --today
+
+# Show last N sessions
+claude-statusline sessions --last 10
+
+# Export to JSON
+claude-statusline sessions --export sessions.json
 ```
 
 **Options:**
-- `--period [day|week|month|all]`: Time period
-- `--by-model`: Group costs by model
-- `--detailed`: Show detailed breakdown
-- `--currency [USD|EUR|GBP]`: Currency display
+- `--today`: Today's sessions only
+- `--last N`: Last N sessions
+- `--model MODEL`: Filter by model
+- `--export FILE`: Export to file
 
-### `reports daily`
-Daily usage summary report.
-
-```bash
-python claude_statusline.py reports daily
-
-# Options
-python claude_statusline.py reports daily --days 7
-python claude_statusline.py reports daily --format table
-```
-
-**Output includes:**
-- Sessions per day
-- Messages sent
-- Tokens used
-- Daily costs
-- Model distribution
-
-### `reports heatmap`
-Visual activity heatmap showing usage patterns.
+### `costs`
+Analyze costs by model and time period.
 
 ```bash
-python claude_statusline.py reports heatmap
+claude-statusline costs
 
-# Options
-python claude_statusline.py reports heatmap --period month
-python claude_statusline.py reports heatmap --by hour
+# Today's costs
+claude-statusline costs --today
+
+# This week's costs
+claude-statusline costs --week
+
+# This month's costs
+claude-statusline costs --month
+
+# By model breakdown
+claude-statusline costs --by-model
 ```
 
-**Displays:**
-- Hour-by-hour activity
-- Day-of-week patterns
-- Peak usage times
-- Session distribution
+**Options:**
+- `--today`: Today's costs
+- `--week`: This week's costs
+- `--month`: This month's costs
+- `--by-model`: Breakdown by model
+- `--export FILE`: Export to CSV
 
-### `reports models`
-Model usage statistics and comparison.
+### `daily`
+Generate daily usage report.
 
 ```bash
-python claude_statusline.py reports models
+claude-statusline daily
 
-# Options
-python claude_statusline.py reports models --compare
-python claude_statusline.py reports models --efficiency
+# Specific date
+claude-statusline daily --date 2025-08-14
+
+# Export to file
+claude-statusline daily --export report.txt
 ```
 
-**Shows:**
-- Model usage frequency
-- Average session length per model
-- Cost efficiency metrics
-- Token/message ratios
+**Options:**
+- `--date YYYY-MM-DD`: Specific date
+- `--timezone TZ`: Timezone (default: local)
+- `--export FILE`: Export to file
 
-### `reports summary`
-High-level summary of all usage.
+### `heatmap`
+Show activity heatmap visualization.
 
 ```bash
-python claude_statusline.py reports summary
+claude-statusline heatmap
 
-# Options
-python claude_statusline.py reports summary --format json
-python claude_statusline.py reports summary --export summary.txt
+# Last 30 days
+claude-statusline heatmap --days 30
+
+# Hourly breakdown
+claude-statusline heatmap --hourly
 ```
+
+**Options:**
+- `--days N`: Last N days
+- `--hourly`: Hourly breakdown
+- `--weekly`: Weekly pattern
+
+### `summary`
+Generate summary statisticlaude-statusline.
+
+```bash
+claude-statusline summary
+
+# All-time summary
+claude-statusline summary --all
+
+# This month
+claude-statusline summary --month
+
+# Export to JSON
+claude-statusline summary --export summary.json
+```
+
+**Options:**
+- `--all`: All-time statisticlaude-statusline
+- `--month`: This month only
+- `--week`: This week only
+- `--export FILE`: Export to file
+
+### `models`
+Show model usage statisticlaude-statusline.
+
+```bash
+claude-statusline models
+
+# With cost breakdown
+claude-statusline models --costs
+
+# Sort by usage
+claude-statusline models --sort usage
+```
+
+**Options:**
+- `--costs`: Include cost breakdown
+- `--sort`: Sort by (usage|cost|count)
+- `--top N`: Show top N models
+
+## Verification Commands
+
+Check and verify data integrity.
+
+### `check-costs`
+Verify cost calculations.
+
+```bash
+claude-statusline check-costs
+
+# Check specific session
+claude-statusline check-costs --session 123
+
+# Recalculate all
+claude-statusline check-costs --recalculate
+```
+
+**Options:**
+- `--session ID`: Check specific session
+- `--recalculate`: Recalculate all costs
+- `--fix`: Fix discrepancies
+
+### `verify`
+Verify database integrity.
+
+```bash
+claude-statusline verify
+
+# Full verification
+claude-statusline verify --full
+
+# Fix issues
+claude-statusline verify --fix
+```
+
+**Options:**
+- `--full`: Complete verification
+- `--fix`: Attempt to fix issues
+- `--report`: Generate report
+
+### `current`
+Check current session detection.
+
+```bash
+claude-statusline current
+
+# Verbose output
+claude-statusline current --verbose
+```
+
+**Options:**
+- `--verbose`: Detailed output
+- `--debug`: Debug information
+
+### `session-data`
+Check session data parsing.
+
+```bash
+claude-statusline session-data
+
+# Check specific file
+claude-statusline session-data --file conversation.jsonl
+
+# Validate all files
+claude-statusline session-data --validate-all
+```
+
+**Options:**
+- `--file FILE`: Check specific file
+- `--validate-all`: Validate all files
+- `--fix`: Fix parsing issues
 
 ## Management Commands
 
-System management and maintenance commands.
+Configuration and system management.
 
-### `manage update-prices`
-Update model pricing from official repository.
+### `template`
+Select statusline display template.
 
 ```bash
-# Update prices
-python claude_statusline.py manage update-prices
+# Interactive selector
+claude-statusline template
+claude-template
 
-# Verify current prices
-python claude_statusline.py manage update-prices --verify
+# Set specific template
+claude-statusline template minimal
+claude-statusline template vim
+claude-statusline template matrix
+
+# List all templates
+claude-statusline template --list
+```
+
+**Available Templates:**
+- `compact`: Default compact format
+- `minimal`: Minimal information
+- `vim`: Vim-style statusline
+- `terminal`: Terminal prompt style
+- `matrix`: Matrix-style display
+- `emoji`: With emoji indicators
+- And 15+ more...
+
+**Options:**
+- `--list`: List all templates
+- `--preview`: Preview all templates
+- `--set TEMPLATE`: Set specific template
+
+### `update-prices`
+Update model pricing data.
+
+```bash
+claude-statusline update-prices
+claude-update-prices
 
 # Force update
-python claude_statusline.py manage update-prices --force
+claude-statusline update-prices --force
 
-# Custom source
-python claude_statusline.py manage update-prices --source URL
+# From specific URL
+claude-statusline update-prices --url https://...
 ```
 
 **Options:**
-- `--verify`: Check price validity
-- `--force`: Update even if unchanged
-- `--no-backup`: Skip backup creation
-- `--source URL`: Custom price source
+- `--force`: Force update
+- `--url URL`: Custom price source
+- `--verify`: Verify prices
 
-### `manage test`
-Run system tests and diagnostics.
-
-```bash
-python claude_statusline.py manage test
-
-# Options
-python claude_statusline.py manage test --verbose
-python claude_statusline.py manage test --component statusline
-```
-
-## Debugging Commands
-
-Commands for troubleshooting and verification.
-
-### `check current`
-Verify current session detection.
+### `rotate`
+Enable/disable statusline rotation.
 
 ```bash
-python claude_statusline.py check current
+claude-statusline rotate
+
+# Enable rotation
+claude-statusline rotate --enable
+
+# Disable rotation
+claude-statusline rotate --disable
+
+# Set interval
+claude-statusline rotate --interval 10
 ```
 
-**Checks:**
-- Active session detection
-- Session timing accuracy
-- Live data updates
-- File tracking
-
-### `check costs`
-Verify cost calculation accuracy.
-
-```bash
-python claude_statusline.py check costs
-
-# Options
-python claude_statusline.py check costs --session SESSION_ID
-python claude_statusline.py check costs --recalculate
-```
-
-### `check verify`
-Comprehensive verification of all components.
-
-```bash
-python claude_statusline.py check verify
-```
-
-**Verifies:**
-- Database integrity
-- Price configuration
-- Session consistency
-- Cost calculations
-
-### `check session`
-Check session data integrity.
-
-```bash
-python claude_statusline.py check session
-
-# Options
-python claude_statusline.py check session --fix
-python claude_statusline.py check session --session SESSION_ID
-```
+**Options:**
+- `--enable`: Enable rotation
+- `--disable`: Disable rotation
+- `--interval N`: Rotation interval (seconds)
 
 ## Configuration
 
-### config.json
-Main configuration file for display and behavior.
+### Configuration File Location
+
+- Default: `~/.claude/data-statusline/config.json`
+- Package: `claude_statusline/config.json`
+
+### Configuration Structure
 
 ```json
 {
   "display": {
+    "template": "compact",
     "enable_rotation": false,
-    "status_format": "compact",
-    "show_git_branch": true,
+    "rotation_interval": 10,
     "time_format": "%H:%M"
   },
   "monitoring": {
     "session_duration_hours": 5,
-    "live_update_interval": 15
+    "live_update_interval": 15,
+    "db_update_interval": 300
   },
-  "reporting": {
-    "cost_precision": 2,
-    "default_timezone": "UTC"
+  "paths": {
+    "claude_projects": "~/.claude/projects",
+    "data_directory": ".claude/data-statusline"
   }
 }
 ```
 
-### prices.json
-Model pricing configuration (auto-updated).
+### Environment Variables
 
-```json
-{
-  "models": {
-    "claude-opus-4-1-20250805": {
-      "input": 15.0,
-      "output": 75.0,
-      "name": "Opus 4.1"
-    }
-  }
-}
+```bash
+# Override data directory
+export CLAUDE_DATA_DIR=/custom/path
+
+# Set template
+export CLAUDE_TEMPLATE=minimal
+
+# Enable debug mode
+export CLAUDE_DEBUG=1
 ```
 
 ## Examples
 
-### Daily Workflow
+### Basic Usage
 
 ```bash
-# Morning: Check yesterday's usage
-python claude_statusline.py daily --days 1
+# Start monitoring
+claude-statusline daemon --start
+claude-statusline status
 
-# Start work: Ensure daemon is running
-python claude_statusline.py daemon --status
-python claude_statusline.py daemon --daemon  # If not running
-
-# During work: Monitor current session
-python claude_statusline.py status
-
-# End of day: Generate reports
-python claude_statusline.py reports summary
-python claude_statusline.py reports costs
+# Daily workflow
+claude-statusline daily
+claude-statusline costs --today
+claude-statusline sessions --today
 ```
 
-### Weekly Analysis
+### Advanced Analyticlaude-statusline
 
 ```bash
-# Weekly cost report
-python claude_statusline.py costs --period week
+# Weekly report
+claude-statusline summary --week
+claude-statusline heatmap --days 7
+claude-statusline costs --week --by-model
 
-# Model efficiency comparison
-python claude_statusline.py reports models --compare
-
-# Activity patterns
-python claude_statusline.py reports heatmap --period week
+# Export data
+claude-statusline sessions --export sessions.json
+claude-statusline costs --export costs.claude-statuslinev
+claude-statusline summary --all --export summary.json
 ```
 
-### Maintenance Tasks
+### Maintenance
 
 ```bash
-# Weekly price update
-python claude_statusline.py update-prices
+# Regular maintenance
+claude-statusline rebuild
+claude-statusline verify --full
+claude-statusline check-costs --recalculate
 
-# Monthly database rebuild
-python claude_statusline.py rebuild
+# Update configuration
+claude-statusline template vim
+claude-statusline update-prices
+claude-statusline rotate --enable --interval 15
+```
 
-# Verify system health
-python claude_statusline.py check verify
+### Debugging
+
+```bash
+# Check system
+claude-statusline daemon --status
+claude-statusline current --verbose
+claude-statusline session-data --validate-all
+
+# Fix issues
+claude-statusline rebuild --force
+claude-statusline verify --fix
+claude-statusline check-costs --fix
 ```
 
 ## Troubleshooting
 
-### No Data Showing
+### Common Issues
 
+#### No Data Showing
 ```bash
-# Check Claude Code data exists
+# Check data exists
 ls ~/.claude/projects/
 
 # Rebuild database
-python claude_statusline.py rebuild
+claude-statusline rebuild --force
 
-# Check daemon status
-python claude_statusline.py daemon --status
+# Check daemon
+claude-statusline daemon --status
+claude-statusline daemon --restart
 ```
 
-### Incorrect Costs
-
+#### Incorrect Costs
 ```bash
 # Update prices
-python claude_statusline.py update-prices
+claude-statusline update-prices --force
 
-# Verify cost calculations
-python claude_statusline.py check costs
+# Verify calculations
+claude-statusline check-costs --recalculate
 
-# Rebuild with fresh data
-python claude_statusline.py rebuild
+# Check specific session
+claude-statusline session-data --file conversation.jsonl
 ```
 
-### Daemon Issues
-
+#### Package Not Found
 ```bash
-# Check daemon status
-python claude_statusline.py daemon --status
+# Reinstall package
+pip uninstall claude-statusline
+pip install dist/claude_statusline-*.whl
 
-# View daemon logs
-cat ~/.claude/data-statusline/daemon_status.json
-
-# Restart daemon
-python claude_statusline.py daemon --restart
+# Development mode
+pip install -e .
 ```
 
-### Session Detection Problems
-
+#### Template Not Working
 ```bash
-# Check current session detection
-python claude_statusline.py check current
+# Reset to default
+claude-statusline template compact
 
-# Verify session data
-python claude_statusline.py check session
+# List available
+claude-statusline template --list
 
-# Force rebuild
-python claude_statusline.py rebuild
+# Preview all
+claude-statusline template --preview
 ```
 
-## Advanced Usage
-
-### Custom Scripts
-
-You can still run individual scripts directly:
+### Debug Mode
 
 ```bash
-# Direct script execution
-python statusline.py
-python unified_daemon.py --daemon
-python cost_analyzer.py --detailed
-```
-
-### Integration with Other Tools
-
-```bash
-# Pipe status to other commands
-python claude_statusline.py status | grep LIVE
-
-# Export data for external processing
-python claude_statusline.py reports sessions --export data.json
-
-# Use in scripts
-if python claude_statusline.py daemon --status | grep -q "running"; then
-    echo "Daemon is active"
-fi
-```
-
-### Cron Jobs
-
-```bash
-# Add to crontab for automated tasks
-# Update prices daily at 3 AM
-0 3 * * * /usr/bin/python /path/to/claude_statusline.py update-prices
-
-# Generate daily report at 6 PM
-0 18 * * * /usr/bin/python /path/to/claude_statusline.py daily
-
-# Ensure daemon is running every hour
-0 * * * * /usr/bin/python /path/to/claude_statusline.py daemon --daemon
-```
-
-## Environment Variables
-
-```bash
-# Custom data directory
-export CLAUDE_DATA_DIR=~/.claude/custom-data
-
-# Custom config path
-export CLAUDE_CONFIG=/path/to/config.json
-
-# Debug mode
+# Enable debug output
 export CLAUDE_DEBUG=1
+claude-statusline status
+
+# Check logs
+cat ~/.claude/data-statusline/daemon.log
 ```
 
-## Exit Codes
-
-| Code | Meaning |
-|------|---------|
-| 0 | Success |
-| 1 | General error |
-| 2 | Missing dependencies |
-| 3 | Configuration error |
-| 4 | Data not found |
-| 5 | Daemon error |
-| 130 | Interrupted (Ctrl+C) |
-
-## Getting Help
+### Getting Help
 
 ```bash
-# General help
-python claude_statusline.py help
-
-# Category help
-python claude_statusline.py reports
-
 # Command help
-python claude_statusline.py reports costs --help
+claude-statusline --help
+claude-statusline status --help
+claude-statusline costs --help
 
-# Version info
-python claude_statusline.py --version
+# Version information
+claude-statusline --version
+claude-statusline --version
 ```
+
+## See Also
+
+- [README.md](README.md) - Project overview
+- [TEMPLATES.md](TEMPLATES.md) - Template gallery
+- [ARCHITECTURE.md](ARCHITECTURE.md) - System design
+- [CLAUDE_CODE_SETUP.md](CLAUDE_CODE_SETUP.md) - Claude Code integration
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guide
 
 ---
 
-For more information, see the [main README](README.md) or visit the [GitHub repository](https://github.com/ersinkoc/claude-statusline).
+**Version**: 1.3.0 | **Package**: `claude-statusline` | **Updated**: 2025-08-14

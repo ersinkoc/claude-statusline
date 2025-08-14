@@ -17,9 +17,9 @@ from pathlib import Path
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List, Optional
 
-from data_directory_utils import resolve_data_directory
-from safe_file_operations import safe_json_read
-from console_utils import safe_print
+from .data_directory_utils import resolve_data_directory
+from .safe_file_operations import safe_json_read
+from .console_utils import safe_print
 
 
 class StatuslineRotator:

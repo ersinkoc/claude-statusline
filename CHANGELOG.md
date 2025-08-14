@@ -8,16 +8,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.0] - 2025-08-14
 
 ### Added
-- 20+ customizable statusline templates
-- Template selector tool with interactive preview
-- Template gallery documentation (TEMPLATES.md)
-- CLI command for template management
-- Support for different styles: vim, terminal, matrix, discord, github, etc.
+- **Python package structure** - Fully packaged as `claude-statusline`
+- **Console entry points** - Direct commands like `claude-status`
+- **Unified CLI interface** - Single command interface for all tools
+- **Package installation support** - Install via pip with `pip install claude-statusline`
+- **Development mode** - Support for editable installation with `pip install -e .`
+- **Build configuration** - Modern packaging with `setup.py` and `pyproject.toml`
+- **20+ customizable statusline templates** - Various display styles
+- **Template selector tool** - Interactive preview and selection
+- **Template gallery documentation** - TEMPLATES.md with all formats
+- **Automatic price updates** - Fetch latest model pricing from official source
+- **Comprehensive CLI documentation** - Full command reference in CLI.md
+- **Claude Code integration guide** - CLAUDE_CODE_SETUP.md
 
 ### Changed
-- Refactored formatter to use template system
-- Updated CLI with template management commands
-- Enhanced documentation with template examples
+- **Complete project restructuring** - All modules moved to `claude_statusline/` package
+- **Import system** - Updated to use relative imports throughout
+- **CLI architecture** - Refactored from subprocess to direct module calls
+- **Formatter system** - Now uses modular template system
+- **Documentation** - Updated for package installation and usage
+- **Configuration** - Improved config file handling and locations
+- **Error handling** - Removed sys.stdout/stderr overrides for better compatibility
+
+### Fixed
+- **Windows encoding issues** - Removed problematic Unicode character handling
+- **Import errors** - Fixed all relative imports for package structure
+- **CLI I/O errors** - Resolved file handle issues in package mode
+- **Database filtering** - Skip synthetic model messages
 
 ## [1.2.0] - 2025-08-14
 

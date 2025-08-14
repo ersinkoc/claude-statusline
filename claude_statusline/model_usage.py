@@ -8,17 +8,13 @@ import json
 import sys
 import io
 
-# Fix Windows console encoding for Unicode
-if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, List, Any
 from collections import defaultdict
 
-from data_directory_utils import resolve_data_directory
-from safe_file_operations import safe_json_read
+from .data_directory_utils import resolve_data_directory
+from .safe_file_operations import safe_json_read
 
 
 class ModelUsageAnalyzer:

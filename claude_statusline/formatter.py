@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, Optional
-from statusline_templates import StatuslineTemplates
+from .templates import StatuslineTemplates
 
 
 class SimpleVisualFormatter:

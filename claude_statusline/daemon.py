@@ -21,10 +21,10 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional, Dict, Any, List
 import subprocess
 
-from instance_manager import InstanceManager
-from rebuild_database import DatabaseRebuilder
-from data_directory_utils import resolve_data_directory
-from safe_file_operations import safe_json_read, safe_json_write
+from .instance_manager import InstanceManager
+from .rebuild import DatabaseRebuilder
+from .data_directory_utils import resolve_data_directory
+from .safe_file_operations import safe_json_read, safe_json_write
 
 
 class UnifiedDaemon:

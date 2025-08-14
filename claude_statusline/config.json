@@ -10,7 +10,7 @@
     "format_mode": "colorful",
     "enable_rotation": false,
     "rotation_interval": 10,
-    "template": "detailed"
+    "template": "matrix"
   },
   "monitoring": {
     "session_duration_hours": 5,

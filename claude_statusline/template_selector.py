@@ -8,7 +8,7 @@ import json
 import sys
 from pathlib import Path
 from typing import Dict, Any
-from statusline_templates import StatuslineTemplates
+from .templates import StatuslineTemplates
 
 
 class TemplateSelector:
