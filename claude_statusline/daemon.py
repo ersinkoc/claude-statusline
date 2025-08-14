@@ -367,18 +367,29 @@ def main():
             if not args.debug:
                 # Detach from console
                 import subprocess
+                import time
                 cmd = [sys.executable, __file__, '--daemon', '--debug']
                 if args.data_dir:
                     cmd.extend(['--data-dir', args.data_dir])
-                    
-                subprocess.Popen(
+                
+                # Create new process group and detach
+                process = subprocess.Popen(
                     cmd,
-                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS,
+                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
-                    stdin=subprocess.DEVNULL
+                    stdin=subprocess.DEVNULL,
+                    close_fds=True
                 )
-                print("Daemon started in background")
+                
+                # Wait a moment to ensure process started
+                time.sleep(2)
+                
+                # Check if daemon actually started
+                if process.poll() is None:
+                    print("Daemon started in background")
+                else:
+                    print("Failed to start daemon")
                 return
                 
         daemon = UnifiedDaemon(data_dir=data_dir)
