@@ -1,267 +1,201 @@
 # Claude Statusline
 
-A comprehensive monitoring and analytics system for Claude Code usage, providing real-time session tracking, cost analysis, and detailed usage insights.
+Real-time session tracking and analytics for Claude Code, displaying usage metrics in a compact statusline format.
 
-## What This Is
-
-Claude Statusline is a powerful tool designed to help developers track and analyze their Claude Code AI assistant usage. It provides:
-
-- **Real-time Session Monitoring**: Track active Claude Code sessions with live updates on message count, token usage, and costs
-- **Comprehensive Analytics**: Analyze usage patterns, costs, and model performance across different time periods
-- **Automatic Data Processing**: Background daemon that continuously processes Claude Code's JSONL log files
-- **Visual Reports**: Generate heatmaps, cost breakdowns, and usage statistics
-- **Model Cost Tracking**: Accurate cost calculation based on official Anthropic pricing
-
-## What This Is NOT
-
-- **Not a Claude Code replacement**: This tool monitors Claude Code usage, it doesn't replace or modify Claude Code itself
-- **Not a cost limiter**: While it tracks costs, it doesn't prevent or limit Claude Code usage
-- **Not official Anthropic software**: This is an independent open-source tool
-- **Not a security tool**: It doesn't encrypt or secure your Claude Code data
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
 
 ## Features
 
-### Core Components
+- 📊 **Real-time Monitoring** - Track active sessions with live updates
+- 💰 **Cost Tracking** - Accurate cost calculation based on official pricing
+- 📈 **Analytics** - Detailed reports on usage patterns and trends
+- 🤖 **Multi-Model Support** - Track Opus, Sonnet, and Haiku models
+- ⚡ **Lightweight** - Minimal dependencies (only psutil)
+- 🎯 **Unified CLI** - Single command interface for all features
 
-1. **Statusline Display** (`statusline.py`)
-   - Shows current session status in a compact format
-   - Displays model name, session time, message count, tokens, and cost
-   - Format: `[Model] [Status] [Time] [Messages] [Tokens] [Cost]`
+## Quick Start
 
-2. **Unified Daemon** (`unified_daemon.py`)
-   - Runs in background to process JSONL files
-   - Updates session database every minute
-   - Manages all data processing operations
+```bash
+# Clone and install
+git clone https://github.com/ersinkoc/claude-statusline.git
+cd claude-statusline
+pip install -r requirements.txt
 
-3. **Database Builder** (`rebuild_database.py`)
-   - Processes all Claude Code JSONL files
-   - Builds comprehensive session database
-   - Detects and tracks active sessions
+# View current status
+python claude_statusline.py status
 
-### Analytics Tools
+# Start background daemon
+python claude_statusline.py daemon --daemon
 
-- **Session Analyzer** (`session_analyzer.py`): Detailed session breakdowns
-- **Cost Analyzer** (`cost_analyzer.py`): Cost analysis by model and time period
-- **Daily Report** (`daily_report.py`): Day-by-day usage summaries
-- **Activity Heatmap** (`activity_heatmap.py`): Visual usage patterns
-- **Model Usage** (`model_usage.py`): Model-specific statistics
-- **Summary Report** (`summary_report.py`): High-level usage overview
+# Generate daily report
+python claude_statusline.py daily
+```
+
+**Example Output:**
+```
+[Opus 4.1] LIVE ~17:00 | 727msg 65.9M $139
+```
 
 ## Installation
 
 ### Prerequisites
-
-- Python 3.8 or higher
-- Claude Code installed and configured
+- Python 3.8+
+- Claude Code installed
 - Access to `~/.claude` directory
 
 ### Setup
-
-1. Clone the repository:
-```bash
-git clone https://github.com/ersinkoc/claude-statusline.git
-cd claude-statusline
-```
-
-2. Install dependencies:
-```bash
-pip install -r requirements.txt  # Only psutil is required
-```
-
-3. Verify Claude Code data location:
-```bash
-ls ~/.claude/projects/  # Should contain project folders with JSONL files
-```
+1. Clone the repository
+2. Install dependencies: `pip install psutil`
+3. Run: `python claude_statusline.py status`
 
 ## Usage
 
-### Quick Start
-
-1. **View current status:**
-```bash
-python statusline.py
-```
-Output: `[Opus 4.1] [LIVE] [ends 17:00] [234msg] [12.5M] [$45.67] [ClaudeStatus] [14:30]`
-
-2. **Start the daemon (for automatic updates):**
-```bash
-python unified_daemon.py --daemon
-```
-
-3. **Rebuild database from JSONL files:**
-```bash
-python rebuild_database.py
-```
-
-### Running Analytics
-
-Generate various reports:
+### Common Commands
 
 ```bash
-# Session analysis
-python session_analyzer.py
+# Core functionality
+python claude_statusline.py status        # Current session status
+python claude_statusline.py daemon        # Manage background daemon
+python claude_statusline.py rebuild       # Rebuild database
 
-# Cost breakdown
-python cost_analyzer.py
+# Analytics
+python claude_statusline.py costs         # Cost analysis
+python claude_statusline.py daily         # Daily report
+python claude_statusline.py sessions      # Session details
 
-# Daily usage report
-python daily_report.py
-
-# Activity heatmap
-python activity_heatmap.py
-
-# Model usage statistics
-python model_usage.py
+# Management
+python claude_statusline.py update-prices # Update model prices
 ```
 
-## Data Structure
+📖 **[Full CLI Documentation](CLI.md)** - Complete command reference with all options and examples
 
-### File Locations
+## How It Works
 
-- **Claude Code Data**: `~/.claude/projects/*/` - Original JSONL files from Claude Code
-- **Statusline Database**: `~/.claude/data-statusline/` - Processed data and analytics
-  - `smart_sessions_db.json` - Main session database
-  - `file_tracking.json` - Tracks processed JSONL files
-  - `daemon_status.json` - Daemon status information
-  - `live_session.json` - Current session data
+1. **Data Collection**: Reads Claude Code's JSONL conversation logs
+2. **Processing**: Background daemon processes and aggregates data
+3. **Storage**: Maintains a local database of sessions and metrics
+4. **Display**: Formats data into a compact, readable statusline
 
-### Session Structure
-
-Sessions are tracked in 5-hour blocks:
-- Each session contains: start time, end time, messages, tokens, cost, model information
-- Active sessions are updated in real-time
-- Historical sessions are preserved for analytics
+```
+Claude Code → JSONL Files → Daemon → Database → Statusline
+```
 
 ## Configuration
 
-### Pricing Configuration
+### Basic Settings (`config.json`)
 
-Model prices are configured in `prices.json`:
 ```json
 {
-  "models": {
-    "claude-opus-4-1-20250805": {
-      "input": 15.0,
-      "output": 75.0,
-      "cache_write_5m": 18.75,
-      "cache_read": 1.5,
-      "name": "Opus 4.1"
-    }
+  "display": {
+    "enable_rotation": false,
+    "status_format": "compact"
+  },
+  "monitoring": {
+    "session_duration_hours": 5
   }
 }
 ```
 
-### Session Duration
+### Pricing Updates
 
-Default session duration is 5 hours. Modify in `rebuild_database.py`:
-```python
-self.session_duration = timedelta(hours=5)
+Model prices are automatically updated from the official repository:
+
+```bash
+python claude_statusline.py update-prices
 ```
 
-## Architecture
+## Project Structure
 
 ```
-┌─────────────────┐
-│  Claude Code    │ ──> Writes JSONL files
-└─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│ ~/.claude/      │ ──> JSONL storage
-│   projects/     │
-└─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│ unified_daemon  │ ──> Processes JSONL files
-└─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│ smart_sessions  │ ──> Session database
-│    _db.json     │
-└─────────────────┘
-         │
-         ▼
-┌─────────────────┐
-│  statusline.py  │ ──> Display current status
-│  & analytics    │ ──> Generate reports
-└─────────────────┘
+claude-statusline/
+├── claude_statusline.py    # Main CLI interface
+├── statusline.py           # Core statusline display
+├── unified_daemon.py       # Background processor
+├── config.json            # Configuration
+├── prices.json            # Model pricing
+├── CLI.md                 # Full CLI documentation
+└── requirements.txt       # Dependencies
 ```
+
+## Data Files
+
+- **Source**: `~/.claude/projects/*/` - Claude Code JSONL files
+- **Database**: `~/.claude/data-statusline/` - Processed data
+  - `smart_sessions_db.json` - Session database
+  - `live_session.json` - Current session
+  - `daemon_status.json` - Daemon status
 
 ## Troubleshooting
 
-### No data showing
-
-1. Check if Claude Code data exists:
+### No Data Showing
 ```bash
-ls -la ~/.claude/projects/
+# Check Claude Code data exists
+ls ~/.claude/projects/
+
+# Rebuild database
+python claude_statusline.py rebuild
+
+# Ensure daemon is running
+python claude_statusline.py daemon --status
 ```
 
-2. Rebuild the database:
+### Incorrect Costs
 ```bash
-python rebuild_database.py
+# Update prices
+python claude_statusline.py update-prices
+
+# Verify calculations
+python claude_statusline.py check costs
 ```
 
-3. Check daemon status:
-```bash
-python unified_daemon.py --status
-```
-
-### Incorrect costs
-
-1. Verify `prices.json` has correct pricing
-2. Check model names match exactly
-3. Rebuild database to recalculate
-
-### Daemon issues
-
-1. Stop existing daemon:
-```bash
-python unified_daemon.py --stop
-```
-
-2. Remove lock file if stuck:
-```bash
-rm ~/.claude/data-statusline/.unified_daemon.lock
-```
-
-3. Restart daemon:
-```bash
-python unified_daemon.py --restart
-```
+### More Help
+- Run `python claude_statusline.py help` for command help
+- See [CLI.md](CLI.md) for detailed documentation
+- Check [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for common issues
 
 ## Contributing
 
-Contributions are welcome! Please:
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+### Development
+
+```bash
+# Run tests
+python claude_statusline.py manage test
+
+# Check code style
+flake8 .
+
+# Build documentation
+cd docs && make html
+```
+
+## Documentation
+
+- [CLI Reference](CLI.md) - Complete command documentation
+- [Architecture](ARCHITECTURE.md) - System design and data flow
+- [Contributing](CONTRIBUTING.md) - Contribution guidelines
+- [Changelog](CHANGELOG.md) - Version history
+- [Security](SECURITY.md) - Security policy
 
 ## License
 
-MIT License - See LICENSE file for details
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- Built for the Claude Code community
-- Uses official Anthropic pricing data
-- Inspired by the need for better usage tracking
-
-## Disclaimer
-
-This tool is not affiliated with, endorsed by, or officially connected to Anthropic or Claude Code. It's an independent open-source project created by the community.
+- Claude Code team for the excellent development environment
+- Contributors and testers from the community
+- Built with ❤️ for the Claude Code community
 
 ## Support
 
-For issues, questions, or suggestions:
-- Open an issue on GitHub
-- Check existing issues for solutions
-- Provide JSONL samples (sanitized) when reporting bugs
+- **Issues**: [GitHub Issues](https://github.com/ersinkoc/claude-statusline/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/ersinkoc/claude-statusline/discussions)
+- **Documentation**: [Full CLI Reference](CLI.md)
 
 ---
 
-**Note**: This tool reads Claude Code's local data files. It does not modify Claude Code or communicate with Anthropic's servers.
+**Current Version**: 1.2.0 | **Last Updated**: 2025-08-14
