@@ -1,0 +1,45 @@
+{
+  "display": {
+    "show_git_branch": true,
+    "show_admin_status": true,
+    "show_system_info": true,
+    "time_format": "%H:%M",
+    "status_format": "compact",
+    "visual_mode": false,
+    "format_style": "standard",
+    "format_mode": "colorful"
+  },
+  "monitoring": {
+    "session_duration_hours": 5,
+    "live_update_interval": 15,
+    "db_update_interval": 300,
+    "max_file_size_mb": 500
+  },
+  "paths": {
+    "claude_projects": "~/.claude/projects",
+    "data_directory": ".claude/data-statusline",
+    "custom_jsonl_paths": []
+  },
+  "reporting": {
+    "default_timezone": "UTC",
+    "export_format": "console",
+    "include_model_details": true,
+    "cost_precision": 6
+  },
+  "advanced": {
+    "enable_debug_logging": false,
+    "parallel_processing": true,
+    "cache_ttl_seconds": 5,
+    "max_concurrent_instances": 10
+  },
+  "notifications": {
+    "cost_threshold_warning": 100.0,
+    "session_timeout_warning": true,
+    "system_error_notifications": true
+  },
+  "performance": {
+    "max_memory_usage_mb": 512,
+    "database_rebuild_threshold_hours": 24,
+    "cleanup_old_sessions_days": 90
+  }
+}
