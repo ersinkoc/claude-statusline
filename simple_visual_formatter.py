@@ -8,73 +8,39 @@ import subprocess
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, Optional
+from statusline_templates import StatuslineTemplates
 
 
 class SimpleVisualFormatter:
     """Simple visual formatter without colors or special Unicode"""
     
-    def __init__(self):
+    def __init__(self, template_name: str = 'compact'):
         """Initialize simple visual formatter"""
         self.git_branch = self._get_git_branch()
         self.current_dir = Path.cwd().name
+        self.templates = StatuslineTemplates()
+        self.template_name = template_name
     
     def format_statusline(self, session_data: Dict[str, Any]) -> str:
         """
-        Format session data with simple visual elements
+        Format session data using templates
         
         Args:
             session_data: Session data dictionary
             
         Returns:
-            Formatted simple visual statusline string
+            Formatted statusline string using selected template
         """
         try:
-            # Extract session info
-            model_name = session_data.get('primary_model', 'Unknown')
-            remaining_seconds = session_data.get('remaining_seconds', 0)
-            message_count = session_data.get('message_count', 0)
-            tokens = session_data.get('tokens', 0)
-            cost = session_data.get('cost', 0.0)
-            is_active = session_data.get('active', False)
-            
-            # Format components
-            parts = []
-            
-            # Model and status
-            model_short = self._format_model(model_name)
-            if is_active:
-                parts.append(f"[{model_short}] LIVE")
-            else:
-                parts.append(f"[{model_short}] OFF")
-            
-            # Time info
-            session_end_time = session_data.get('session_end_time')
-            if session_end_time:
-                parts.append(f"~{session_end_time}")
-            elif remaining_seconds > 0:
-                time_display = self._format_time_remaining(remaining_seconds)
-                parts.append(time_display)
-            else:
-                parts.append("EXPIRED")
-            
-            # Usage info with separator
-            token_display = self._format_tokens(tokens)
-            parts.append("|")
-            parts.append(f"{message_count}msg")
-            parts.append(token_display)
-            
-            # Cost
-            if cost >= 100:
-                parts.append(f"${cost:.0f}")
-            elif cost >= 10:
-                parts.append(f"${cost:.1f}")
-            else:
-                parts.append(f"${cost:.2f}")
-            
-            return " ".join(parts)
+            # Use template system
+            return self.templates.format(self.template_name, session_data)
             
         except Exception as e:
-            return f"[ERROR: {str(e)[:30]}]"
+            # Fallback to basic format on error
+            model = session_data.get('primary_model', '?')
+            msgs = session_data.get('message_count', 0)
+            cost = session_data.get('cost', 0.0)
+            return f"[{model}] {msgs}msg ${cost:.2f} (Error: {str(e)[:20]})"
     
     def _format_model(self, model_name: str) -> str:
         """Format model name for display - readable but short"""

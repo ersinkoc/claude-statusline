@@ -5,6 +5,20 @@ All notable changes to Claude Statusline will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-08-14
+
+### Added
+- 20+ customizable statusline templates
+- Template selector tool with interactive preview
+- Template gallery documentation (TEMPLATES.md)
+- CLI command for template management
+- Support for different styles: vim, terminal, matrix, discord, github, etc.
+
+### Changed
+- Refactored formatter to use template system
+- Updated CLI with template management commands
+- Enhanced documentation with template examples
+
 ## [1.2.0] - 2025-08-14
 
 ### Changed

@@ -76,8 +76,11 @@ class StatuslineDisplay:
         # Cost display precision
         self.cost_precision = self.config.get('reporting', {}).get('cost_precision', 6)
         
-        # Simple visual formatter for better compatibility
-        self.simple_visual_formatter = SimpleVisualFormatter()
+        # Get template from config
+        self.template_name = self.config.get('display', {}).get('template', 'compact')
+        
+        # Simple visual formatter with template support
+        self.simple_visual_formatter = SimpleVisualFormatter(template_name=self.template_name)
         
         # Rotating statusline for variety
         self.statusline_rotator = StatuslineRotator(data_dir=self.data_dir)

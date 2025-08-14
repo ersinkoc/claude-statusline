@@ -12,6 +12,7 @@ Real-time session tracking and analytics for Claude Code, displaying usage metri
 - 💰 **Cost Tracking** - Accurate cost calculation based on official pricing
 - 📈 **Analytics** - Detailed reports on usage patterns and trends
 - 🤖 **Multi-Model Support** - Track Opus, Sonnet, and Haiku models
+- 🎨 **20+ Display Templates** - Choose from various statusline formats
 - ⚡ **Lightweight** - Minimal dependencies (only psutil)
 - 🎯 **Unified CLI** - Single command interface for all features
 
@@ -33,10 +34,15 @@ python claude_statusline.py daemon --daemon
 python claude_statusline.py daily
 ```
 
-**Example Output:**
+**Example Outputs:**
 ```
-[Opus 4.1] LIVE ~17:00 | 727msg 65.9M $139
+[Opus 4.1] LIVE ~17:00 | 727msg 65.9M $139     # Compact (default)
+O4.1 456m $90                                   # Minimal
+claude@O4.1:~$ 456 msgs | $89.99               # Terminal
+--INSERT-- O4.1 456L $90.0 [utf-8]             # Vim style
 ```
+
+📖 **[See all 20+ templates](TEMPLATES.md)** - Choose your favorite style!
 
 ## Installation
 
@@ -67,6 +73,7 @@ python claude_statusline.py sessions      # Session details
 
 # Management
 python claude_statusline.py update-prices # Update model prices
+python claude_statusline.py manage template  # Change display style
 ```
 
 📖 **[Full CLI Documentation](CLI.md)** - Complete command reference with all options and examples
@@ -89,6 +96,7 @@ Claude Code → JSONL Files → Daemon → Database → Statusline
 ```json
 {
   "display": {
+    "template": "compact",      // Choose from 20+ templates
     "enable_rotation": false,
     "status_format": "compact"
   },
@@ -97,6 +105,18 @@ Claude Code → JSONL Files → Daemon → Database → Statusline
   }
 }
 ```
+
+### Template Selection
+
+```bash
+# Interactive template selector with preview
+python select_template.py
+
+# Quick template change
+python select_template.py --set vim
+```
+
+📖 **[Template Gallery](TEMPLATES.md)** - Preview all available statusline formats
 
 ### Pricing Updates
 
@@ -175,6 +195,7 @@ cd docs && make html
 ## Documentation
 
 - [CLI Reference](CLI.md) - Complete command documentation
+- [Template Gallery](TEMPLATES.md) - All 20+ statusline formats
 - [Architecture](ARCHITECTURE.md) - System design and data flow
 - [Contributing](CONTRIBUTING.md) - Contribution guidelines
 - [Changelog](CHANGELOG.md) - Version history

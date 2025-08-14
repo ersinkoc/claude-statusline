@@ -117,6 +117,10 @@ class DatabaseRebuilder:
                             # Get model
                             model = msg.get('model', 'unknown')
                             
+                            # Skip synthetic models (test/debug messages)
+                            if 'synthetic' in model.lower():
+                                continue
+                            
                             # Get usage
                             usage = msg.get('usage', {})
                             input_tokens = usage.get('input_tokens', 0)

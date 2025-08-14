@@ -87,6 +87,10 @@ TOOLS = {
                 'script': 'update_prices.py',
                 'help': 'Update model prices from repository'
             },
+            'template': {
+                'script': 'select_template.py',
+                'help': 'Select statusline display template'
+            },
             'test': {
                 'script': 'test_statusline.py',
                 'help': 'Test statusline functionality'

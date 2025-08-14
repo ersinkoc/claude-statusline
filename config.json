@@ -9,7 +9,8 @@
     "format_style": "standard",
     "format_mode": "colorful",
     "enable_rotation": false,
-    "rotation_interval": 10
+    "rotation_interval": 10,
+    "template": "detailed"
   },
   "monitoring": {
     "session_duration_hours": 5,
