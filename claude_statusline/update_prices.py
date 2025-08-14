@@ -15,7 +15,7 @@ import urllib.error
 import ssl
 
 # Default source URL
-DEFAULT_SOURCE_URL = "https://raw.githubusercontent.com/ersinkoc/claude-statusline/refs/heads/feature/visual-statusline/prices.json"
+DEFAULT_SOURCE_URL = "https://raw.githubusercontent.com/ersinkoc/claude-statusline/refs/heads/feature/visual-statusline/claude_statusline/prices.json"
 
 
 class PriceUpdater:
