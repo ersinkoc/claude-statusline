@@ -5,6 +5,13 @@ All notable changes to Claude Statusline will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2025-08-14
+
+### Fixed
+- **Import-time file reading errors** - Fixed modules that were reading files during import
+- Database file checks now happen at runtime, not import time
+- Added proper error messages when database doesn't exist
+
 ## [1.3.1] - 2025-08-14
 
 ### Removed
