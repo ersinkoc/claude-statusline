@@ -15,7 +15,7 @@ requirements = (this_directory / "requirements.txt").read_text().strip().split("
 
 setup(
     name="claude-statusline",
-    version="1.3.0",
+    version="1.3.1",
     author="Ersin Koç",
     author_email="ersinkoc@users.noreply.github.com",
     description="Real-time session tracking and analytics for Claude Code",

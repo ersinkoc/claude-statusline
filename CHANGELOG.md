@@ -5,6 +5,16 @@ All notable changes to Claude Statusline will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-08-14
+
+### Removed
+- **Short alias `cs`** - Removed the short command alias to avoid conflicts with other tools
+- All references to `cs` command in documentation
+
+### Changed
+- Updated all documentation to use full `claude-statusline` command
+- Cleaned up CLI help text
+
 ## [1.3.0] - 2025-08-14
 
 ### Added

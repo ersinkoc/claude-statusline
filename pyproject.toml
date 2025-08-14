@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "claude-statusline"
-version = "1.3.0"
+version = "1.3.1"
 description = "Real-time session tracking and analytics for Claude Code"
 readme = "README.md"
 authors = [
-    {name = "Ersin Koç", email = "ersinkoc@users.noreply.github.com"}
+    {name = "Ersin Koç", email = "ersinkoc@gmail.com"}
 ]
 license = {text = "MIT"}
 requires-python = ">=3.8"
@@ -53,7 +53,6 @@ Changelog = "https://github.com/ersinkoc/claude-statusline/blob/main/CHANGELOG.m
 
 [project.scripts]
 claude-statusline = "claude_statusline.cli:main"
-cs = "claude_statusline.cli:main"
 claude-status = "claude_statusline.statusline:main"
 claude-daemon = "claude_statusline.daemon:main"
 claude-rebuild = "claude_statusline.rebuild:main"

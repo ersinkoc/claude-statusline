@@ -5,7 +5,7 @@ Real-time session tracking and analytics for Claude Code, displaying usage metri
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-1.3.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.3.1-green.svg)
 
 ## Features
 
@@ -330,4 +330,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Current Version**: 1.3.0 | **Last Updated**: 2025-08-14 | **Package**: `claude-statusline`
+**Current Version**: 1.3.1 | **Last Updated**: 2025-08-14 | **Package**: `claude-statusline`
