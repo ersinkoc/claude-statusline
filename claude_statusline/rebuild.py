@@ -205,7 +205,7 @@ class DatabaseRebuilder:
                         'session_end': session_end.isoformat(),
                         'message_count': 0,
                         'tokens': 0,
-                        'cost': 0.0,
+                        'cost': 0.0,  # We don't track cost in work_sessions to avoid double counting with hourly_statistics
                         'models': [],
                         'primary_model': 'unknown'
                     }
@@ -213,7 +213,9 @@ class DatabaseRebuilder:
                 # Add hour data to current session
                 current_session['message_count'] += hour_data['messages']
                 current_session['tokens'] += hour_data['total_tokens']
-                current_session['cost'] += hour_data['cost']
+                # Don't accumulate cost in work_sessions - it's already tracked in hourly_statistics
+                # This avoids double counting
+                # current_session['cost'] += hour_data['cost']
                 
                 # Track models
                 for model in hour_data['models']:
@@ -246,7 +248,7 @@ class DatabaseRebuilder:
                         'session_end': session_end.isoformat(),
                         'message_count': hour_data['messages'],
                         'tokens': hour_data['total_tokens'],
-                        'cost': hour_data['cost'],
+                        'cost': 0.0,  # Don't track cost in work_sessions to avoid double counting
                         'models': list(hour_data['models'].keys()),
                         'primary_model': 'unknown'
                     }
@@ -298,13 +300,24 @@ class DatabaseRebuilder:
                     # Remove session_end since it's still active
                     last_session.pop('session_end', None)
                     
+                    # Calculate session cost from hourly_statistics for the session period
+                    session_cost = 0.0
+                    session_start_hour = session_start.hour
+                    session_end_hour = min(now.hour + 1, 24)  # Include current hour
+                    
+                    if today_str in hourly_statistics:
+                        for hour in range(session_start_hour, session_end_hour):
+                            hour_str = str(hour)
+                            if hour_str in hourly_statistics[today_str]:
+                                session_cost += hourly_statistics[today_str][hour_str].get('cost', 0.0)
+                    
                     # Set as current session
                     current_session_data = {
                         'session_number': len(work_sessions[today_str]),
                         'session_start': last_session['session_start'],
                         'message_count': last_session['message_count'],
                         'tokens': last_session['tokens'],
-                        'cost': last_session['cost'],
+                        'cost': session_cost,  # Use calculated cost from hourly_statistics
                         'model': last_session.get('primary_model', 'unknown'),
                         'last_update': now.isoformat()
                     }

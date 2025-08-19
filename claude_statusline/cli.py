@@ -25,6 +25,9 @@ from . import check_current
 from . import check_session_data
 from . import update_prices
 from . import statusline_rotator
+from . import theme_manager
+from . import usage_analytics
+from . import budget_manager
 
 # Tool categories and descriptions
 TOOLS = {
@@ -71,6 +74,10 @@ TOOLS = {
             'models': {
                 'module': model_usage,
                 'help': 'Show model usage statistics'
+            },
+            'analytics': {
+                'module': usage_analytics,
+                'help': 'Advanced usage analytics and insights'
             }
         }
     },
@@ -109,6 +116,18 @@ TOOLS = {
             'rotate': {
                 'module': statusline_rotator,
                 'help': 'Enable/disable statusline rotation'
+            },
+            'theme': {
+                'module': theme_manager,
+                'help': 'Interactive theme manager (search, preview, create custom themes)'
+            },
+            'budget': {
+                'module': budget_manager,
+                'help': 'Budget management and cost tracking'
+            },
+            'visual-builder': {
+                'module': None,  # Will handle directly
+                'help': 'Visual theme builder with live preview'
             }
         }
     }
@@ -134,7 +153,8 @@ def print_help():
     print("  claude-statusline status")
     print("  claude-statusline daemon --start")
     print("  claude-statusline costs --today")
-    print("  claude-statusline template minimal")
+    print("  claude-statusline theme")
+    print("  claude-statusline visual-builder")
 
 def get_version():
     """Get the package version"""
@@ -180,6 +200,12 @@ def main():
     
     # Execute the command by calling its main function
     try:
+        # Handle special commands directly
+        if cmd == 'visual-builder':
+            from .theme_builder import main as visual_builder_main
+            visual_builder_main()
+            return
+        
         # Pass remaining arguments to the module
         original_argv = sys.argv.copy()
         sys.argv = [cmd] + sys.argv[2:]
@@ -198,8 +224,9 @@ def main():
         print(f"Error executing '{cmd}': {e}")
         sys.exit(1)
     finally:
-        # Restore original argv
-        sys.argv = original_argv
+        # Restore original argv if it was set
+        if 'original_argv' in locals():
+            sys.argv = original_argv
 
 if __name__ == "__main__":
     main()

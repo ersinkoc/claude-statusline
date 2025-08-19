@@ -29,22 +29,15 @@ def main():
     
     print(f"Cost from hourly_statistics: ${hourly_total:.2f}")
     
-    # Calculate from work sessions
-    session_total = 0
+    # Note: We no longer track costs in work_sessions to avoid double counting
+    # Costs are only tracked in hourly_statistics
     session_count = 0
     for date, sessions in db.get('work_sessions', {}).items():
-        for session in sessions:
-            session_total += session.get('cost', 0)
-            session_count += 1
+        session_count += len(sessions)
     
-    print(f"Cost from work_sessions: ${session_total:.2f}")
-    print(f"Number of sessions: {session_count}")
-    
-    if abs(hourly_total - session_total) > 1:
-        print(f"\n⚠️ MISMATCH! Difference: ${abs(hourly_total - session_total):.2f}")
-        print("Work sessions might be double-counting or miscalculating costs.")
-    else:
-        print("\n✅ Costs match!")
+    print(f"Number of work sessions: {session_count}")
+    print(f"\n✅ Cost tracking is now centralized in hourly_statistics: ${hourly_total:.2f}")
+    print("Note: work_sessions no longer tracks costs to avoid double counting.")
 
 if __name__ == "__main__":
     main()

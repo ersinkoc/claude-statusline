@@ -1,5 +1,6 @@
 # Claude Statusline Dependencies
 # This project primarily uses Python standard library
-# Only one external dependency is required:
+# Core dependencies:
 
 psutil>=5.9.0  # For process management and PID checking
+colorama>=0.4.6  # For cross-platform colored terminal output

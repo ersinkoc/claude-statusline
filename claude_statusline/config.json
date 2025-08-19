@@ -10,7 +10,20 @@
     "format_mode": "colorful",
     "enable_rotation": false,
     "rotation_interval": 10,
-    "template": "matrix"
+    "template": "compact",
+    "enable_colors": true,
+    "color_scheme": {
+      "model": "cyan",
+      "status_live": "green",
+      "status_expired": "red",
+      "status_new": "blue",
+      "time": "yellow",
+      "messages": "white",
+      "tokens": "magenta",
+      "cost": "yellow",
+      "git_branch": "blue",
+      "brackets": "white"
+    }
   },
   "monitoring": {
     "session_duration_hours": 5,

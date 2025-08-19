@@ -16,6 +16,20 @@ import sys
 import platform
 from typing import Dict, Any
 
+try:
+    from colorama import init, Fore, Back, Style
+    init(autoreset=True)
+    COLORS_AVAILABLE = True
+except ImportError:
+    COLORS_AVAILABLE = False
+    class Fore:
+        BLACK = WHITE = RED = GREEN = YELLOW = BLUE = MAGENTA = CYAN = ''
+        LIGHTBLACK_EX = LIGHTWHITE_EX = LIGHTRED_EX = LIGHTGREEN_EX = ''
+        LIGHTYELLOW_EX = LIGHTBLUE_EX = LIGHTMAGENTA_EX = LIGHTCYAN_EX = ''
+        RESET = ''
+    class Style:
+        BRIGHT = DIM = NORMAL = RESET_ALL = ''
+
 
 class SafeConsoleOutput:
     """
@@ -132,3 +146,33 @@ def safe_print(text: str, end: str = '\n', flush: bool = False):
 def format_for_console(text: str) -> str:
     """Global function for console-safe text formatting"""
     return console.format_for_console(text)
+
+
+def print_colored(text: str, color: str = None, bold: bool = False):
+    """Print colored text to console with colorama support"""
+    if not COLORS_AVAILABLE or color is None:
+        print(text)
+        return
+    
+    # Map color names to colorama colors
+    color_map = {
+        'red': Fore.RED,
+        'green': Fore.GREEN,
+        'yellow': Fore.YELLOW,
+        'blue': Fore.BLUE,
+        'magenta': Fore.MAGENTA,
+        'cyan': Fore.CYAN,
+        'white': Fore.WHITE,
+        'black': Fore.BLACK,
+        'lightred': Fore.LIGHTRED_EX,
+        'lightgreen': Fore.LIGHTGREEN_EX,
+        'lightyellow': Fore.LIGHTYELLOW_EX,
+        'lightblue': Fore.LIGHTBLUE_EX,
+        'lightmagenta': Fore.LIGHTMAGENTA_EX,
+        'lightcyan': Fore.LIGHTCYAN_EX,
+    }
+    
+    color_code = color_map.get(color.lower(), '')
+    style_code = Style.BRIGHT if bold else ''
+    
+    print(f"{style_code}{color_code}{text}{Style.RESET_ALL}")

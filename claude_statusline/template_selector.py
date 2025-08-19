@@ -9,6 +9,8 @@ import sys
 from pathlib import Path
 from typing import Dict, Any
 from .templates import StatuslineTemplates
+from .colored_templates import ColoredTemplates
+from .formatter import SimpleVisualFormatter
 
 
 class TemplateSelector:
@@ -18,7 +20,83 @@ class TemplateSelector:
         """Initialize template selector"""
         self.config_file = Path(__file__).parent / "config.json"
         self.templates = StatuslineTemplates()
+        self.colored_templates = ColoredTemplates()
         self.sample_data = self._get_sample_data()
+        self.all_templates = self._get_all_templates()
+    
+    def _get_all_templates(self) -> Dict[str, str]:
+        """Get all templates with descriptions"""
+        all_templates = {}
+        
+        # Standard templates
+        for name in self.templates.list_templates():
+            all_templates[name] = self.templates.get_description(name)
+        
+        # Colored templates
+        colored_descriptions = {
+            # Developer
+            'vscode': '🔷 VSCode style statusline',
+            'intellij': '🧠 IntelliJ IDEA style',
+            'sublime': '🎨 Sublime Text style',
+            'atom': '⚛️ Atom editor style',
+            'neovim': '📝 Neovim with powerline',
+            'emacs': '🔮 Emacs modeline style',
+            # Gaming
+            'minecraft': '⛏️ Minecraft blocks style',
+            'cyberpunk': '🤖 Cyberpunk 2077 theme',
+            'retro': '🕹️ 80s retro arcade',
+            'arcade': '👾 Classic arcade game',
+            'rpg': '⚔️ RPG game style',
+            # Professional
+            'executive': '💼 Executive dashboard',
+            'analyst': '📊 Data analyst style',
+            'consultant': '📈 Management consultant',
+            'startup': '🚀 Startup hustle mode',
+            # Creative
+            'rainbow': '🌈 Rainbow colored',
+            'neon': '💫 Neon lights style',
+            'pastel': '🌸 Soft pastel colors',
+            'gradient': '🎨 Gradient style',
+            'artistic': '🖼️ Artistic design',
+            # System
+            'windows': '⊞ Windows 11 style',
+            'macos': '🍎 macOS style',
+            'ubuntu': '🟠 Ubuntu style',
+            'arch': '🔷 Arch Linux style',
+            # Social
+            'twitter': '🐦 Twitter style',
+            'instagram': '📷 Instagram style',
+            'youtube': '📺 YouTube style',
+            'linkedin': '💼 LinkedIn style',
+            'reddit': '🤖 Reddit style',
+            # Special
+            'christmas': '🎄 Christmas theme',
+            'halloween': '🎃 Halloween theme',
+            'summer': '☀️ Summer vibes',
+            'winter': '❄️ Winter theme',
+            'space': '🚀 Space theme',
+            'ocean': '🌊 Ocean theme',
+            'forest': '🌲 Forest theme',
+            'desert': '🏜️ Desert theme',
+            # Minimalist
+            'mono': '⚫ Monochrome minimal',
+            'duo': '⚪ Two-tone style',
+            'noir': '🌙 Dark noir theme',
+            'clean': '✨ Clean minimal',
+            # Fun
+            'emoji_party': '🎉 Emoji party mode',
+            'kawaii': '💖 Kawaii cute style',
+            'leetspeak': '1337 L33t h4x0r',
+            'pirate': '🏴‍☠️ Pirate speak',
+            'robot': '🤖 Robot mode',
+            'wizard': '🧙 Wizard style'
+        }
+        
+        for name, desc in colored_descriptions.items():
+            if name in self.colored_templates.templates:
+                all_templates[name] = desc
+        
+        return all_templates
     
     def _get_sample_data(self) -> Dict[str, Any]:
         """Get sample data for preview"""
@@ -76,28 +154,50 @@ class TemplateSelector:
     
     def preview_all(self):
         """Preview all available templates"""
-        print("\nClaude Statusline Template Gallery")
-        print("=" * 70)
-        print("\nUsing sample data for preview:")
+        print("\n🎨 Claude Statusline Template Gallery")
+        print("=" * 80)
+        print("\n📊 Using sample data for preview:")
         
         # Show sample data info
         model = self.sample_data.get('primary_model', 'Unknown')
         msgs = self.sample_data.get('message_count', 0)
         cost = self.sample_data.get('cost', 0.0)
-        print(f"Model: {model}, Messages: {msgs}, Cost: ${cost:.2f}")
-        print("-" * 70)
+        print(f"   Model: {model}, Messages: {msgs}, Cost: ${cost:.2f}")
+        print("-" * 80)
         
-        templates = self.templates.list_templates()
-        for i, template in enumerate(templates, 1):
-            output = self.templates.format(template, self.sample_data)
-            desc = self.templates.get_description(template)
+        # Group templates by category
+        categories = {
+            '🎯 Standard': ['compact', 'minimal', 'detailed', 'emoji', 'dev', 'vim', 'powerline', 
+                           'matrix', 'nerd', 'zen', 'hacker', 'corporate', 'creative', 'scientific',
+                           'casual', 'discord', 'twitch', 'github', 'terminal', 'json'],
+            '💻 Developer': ['vscode', 'intellij', 'sublime', 'atom', 'neovim', 'emacs'],
+            '🎮 Gaming': ['minecraft', 'cyberpunk', 'retro', 'arcade', 'rpg'],
+            '💼 Professional': ['executive', 'analyst', 'consultant', 'startup'],
+            '🎨 Creative': ['rainbow', 'neon', 'pastel', 'gradient', 'artistic'],
+            '🖥️ System': ['windows', 'macos', 'ubuntu', 'arch'],
+            '🌟 Special': ['christmas', 'halloween', 'summer', 'winter', 'space', 'ocean', 'forest', 'desert'],
+            '⚡ Minimalist': ['mono', 'duo', 'noir', 'clean'],
+            '🎉 Fun': ['emoji_party', 'kawaii', 'leetspeak', 'pirate', 'robot', 'wizard']
+        }
+        
+        config = self.load_config()
+        current = config.get('display', {}).get('template', 'compact')
+        
+        for category, template_names in categories.items():
+            print(f"\n{category}")
+            print("-" * 40)
             
-            # Mark current template
-            config = self.load_config()
-            current = config.get('display', {}).get('template', 'compact')
-            marker = " [CURRENT]" if template == current else ""
-            
-            print(f"\n{i:2}. {template:15} - {desc}{marker}")
+            for template in template_names:
+                if template in self.all_templates:
+                    # Create formatter for this template
+                    formatter = SimpleVisualFormatter(template_name=template)
+                    output = formatter.format_statusline(self.sample_data)
+                    desc = self.all_templates[template]
+                    
+                    marker = " ⭐" if template == current else ""
+                    print(f"  {template:20} {desc}{marker}")
+                    print(f"    → {output}")
+                    print()
             print(f"    {output}")
     
     def select_interactive(self):

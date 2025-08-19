@@ -177,3 +177,5 @@ Desktop.ini
 # Linux specific
 .directory
 .Trash-*
+
+.pypirc
