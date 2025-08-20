@@ -109,7 +109,7 @@ Add to your Claude Code `settings.json`:
 
 ```json
 {
-  "statusline": {
+  "statusLine": {
     "command": "claude-status"
   }
 }
@@ -119,7 +119,7 @@ Or if using from source:
 
 ```json
 {
-  "statusline": {
+  "statusLine": {
     "command": "python",
     "args": ["path/to/claude-statusline/statusline.py"]
   }
