@@ -197,15 +197,130 @@ class BudgetManager:
             critical_threshold = self.budget_config['alerts']['critical_threshold']
             
             if percentage >= critical_threshold * 100:
-                status['alerts'].append({
-                    'type': 'critical',
-                    'message': f"🚨 CRITICAL: {period} budget {percentage:.1f}% used (${spent:.2f}/${limit:.2f})"
-                })
+                status['alerts'].append(f"🚨 CRITICAL: {period.title()} budget {percentage:.1f}% used (${spent:.2f}/${limit:.2f})")
             elif percentage >= warning_threshold * 100:
-                status['alerts'].append({
-                    'type': 'warning', 
-                    'message': f"⚠️ WARNING: {period} budget {percentage:.1f}% used (${spent:.2f}/${limit:.2f})"
-                })
+                status['alerts'].append(f"⚠️ WARNING: {period.title()} budget {percentage:.1f}% used (${spent:.2f}/${limit:.2f})")
+        
+        return status
+    
+    def show_dashboard(self):
+        """Display comprehensive budget dashboard"""
+        print("\n" + "="*80)
+        print("💰 BUDGET DASHBOARD")
+        print("="*80 + "\n")
+        
+        status = self.check_budget_status()
+        
+        # Period budgets
+        if status['periods']:
+            print("📅 PERIOD BUDGETS")
+            print("-" * 40)
+            for period, data in status['periods'].items():
+                spent = data['spent']
+                limit = data['limit']
+                remaining = data['remaining']
+                percentage = data['percentage']
+                
+                status_color = "green" if percentage < 80 else "yellow" if percentage < 95 else "red"
+                status_icon = "✅" if percentage < 80 else "⚠️" if percentage < 95 else "❌"
+                
+                print(f"{status_icon} {period.title()}: ${spent:.2f} / ${limit:.2f} ({percentage:.1f}%)")
+                if remaining > 0:
+                    print(f"    Remaining: ${remaining:.2f}")
+                else:
+                    print(f"    Over budget by: ${abs(remaining):.2f}")
+            print()
+        
+        # Show top spending categories
+        self.show_spending_breakdown()
+        
+        # Show alerts if any
+        if status['alerts']:
+            print("🚨 BUDGET ALERTS")
+            print("-" * 40)
+            for alert in status['alerts']:
+                print(f"  {alert}")
+            print()
+    
+    def show_budget_status(self):
+        """Show simple budget status"""
+        print("\n" + "="*60)
+        print("💰 BUDGET STATUS")
+        print("="*60 + "\n")
+        
+        for period in ['daily', 'weekly', 'monthly', 'yearly']:
+            config = self.budget_config['budgets'].get(period, {})
+            if not config.get('enabled', False):
+                continue
+            
+            spent = self.get_period_spending(period)
+            limit = config['limit']
+            percentage = (spent / limit) * 100 if limit > 0 else 0
+            
+            status_icon = "✅" if percentage < 80 else "⚠️" if percentage < 95 else "❌"
+            print(f"{status_icon} {period.title()}: ${spent:.2f} / ${limit:.2f} ({percentage:.1f}%)")
+    
+    def show_spending_breakdown(self):
+        """Show detailed spending breakdown"""
+        print("📊 SPENDING BREAKDOWN")
+        print("-" * 40)
+        
+        # Get model breakdown
+        model_costs = defaultdict(float)
+        hourly_stats = self.db.get('hourly_statistics', {})
+        
+        for date_str, hours in hourly_stats.items():
+            try:
+                session_date = datetime.strptime(date_str, "%Y-%m-%d")
+                # Only include current month
+                if session_date.month == datetime.now().month and session_date.year == datetime.now().year:
+                    for hour_data in hours.values():
+                        model = hour_data.get('primary_model', 'Unknown')
+                        cost = hour_data.get('cost', 0.0)
+                        model_costs[model] += cost
+            except ValueError:
+                continue
+        
+        # Sort by cost
+        sorted_models = sorted(model_costs.items(), key=lambda x: x[1], reverse=True)
+        
+        print("This Month by Model:")
+        for model, cost in sorted_models[:5]:  # Top 5 models
+            print(f"  🤖 {model}: ${cost:.2f}")
+        
+        total_month = sum(model_costs.values())
+        print(f"\n📈 Total This Month: ${total_month:.2f}")
+        
+        # Calculate daily average
+        days_in_month = datetime.now().day
+        daily_avg = total_month / days_in_month if days_in_month > 0 else 0
+        print(f"📊 Daily Average: ${daily_avg:.2f}")
+        print()
+    
+    def export_budget_report(self, format_type: str = 'json', output_path: str = None) -> str:
+        """Export budget report in specified format"""
+        if not output_path:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            output_path = self.data_dir / f"budget_report_{timestamp}.{format_type}"
+        
+        status = self.check_budget_status()
+        
+        if format_type == 'json':
+            with open(output_path, 'w') as f:
+                json.dump(status, f, indent=2, default=str)
+        elif format_type == 'csv':
+            import csv
+            with open(output_path, 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(['Period', 'Spent', 'Limit', 'Remaining', 'Percentage'])
+                for period, data in status['periods'].items():
+                    writer.writerow([
+                        period, data['spent'], data['limit'], 
+                        data['remaining'], f"{data['percentage']:.1f}%"
+                    ])
+        
+        print(f"✅ Budget report exported to: {output_path}")
+        return str(output_path)
         
         # Check model limits
         for model, limits in self.budget_config['model_limits'].items():

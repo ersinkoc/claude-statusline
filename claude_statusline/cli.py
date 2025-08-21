@@ -41,12 +41,14 @@ Analytics:
   models          Show model usage statistics
   analytics       Advanced usage analytics
   budget          Budget management and tracking
+  trends          Analyze usage trends and patterns
 
 Utilities:
 ----------
   update-prices   Update model pricing data
   verify          Verify cost calculations
   rotate          Enable/disable statusline rotation
+  health          System health monitoring
 
 Options:
   -h, --help      Show this help message
@@ -72,7 +74,7 @@ def main():
         sys.exit(0)
     
     if cmd in ['-v', '--version', 'version']:
-        print("claude-statusline v1.8.0")
+        print("claude-statusline v1.9.0")
         sys.exit(0)
     
     # Handle commands
@@ -175,28 +177,101 @@ def main():
                 print("  daemon --stop    Stop the daemon")
                 
         elif cmd == 'sessions':
-            from claude_statusline.session_analyzer import main as sessions_main
-            sessions_main()
+            from claude_statusline.session_analyzer import SessionAnalyzer
+            analyzer = SessionAnalyzer()
+            
+            # Parse subcommands
+            if len(sys.argv) > 2 and sys.argv[2] == '--patterns':
+                analyzer.analyze_usage_patterns()
+            elif len(sys.argv) > 2 and sys.argv[2] == '--top':
+                n = int(sys.argv[3]) if len(sys.argv) > 3 else 10
+                analyzer.get_top_sessions(n)
+            else:
+                analyzer.analyze_all_sessions()
             
         elif cmd == 'costs':
-            from claude_statusline.cost_analyzer import main as costs_main
-            costs_main()
+            from claude_statusline.cost_analyzer import CostAnalyzer
+            analyzer = CostAnalyzer()
+            
+            # Parse subcommands
+            if len(sys.argv) > 2 and sys.argv[2] == '--trends':
+                days = int(sys.argv[3]) if len(sys.argv) > 3 else 30
+                analyzer.analyze_cost_trends(days)
+            else:
+                analyzer.analyze_costs()
             
         elif cmd == 'daily':
-            from claude_statusline.daily_report import main as daily_main
-            daily_main()
+            from claude_statusline.daily_report import DailyReportGenerator
+            generator = DailyReportGenerator()
+            
+            # Parse subcommands  
+            date_str = None
+            days = 7
+            for i, arg in enumerate(sys.argv[2:], 2):
+                if arg == '--date' and i+1 < len(sys.argv):
+                    date_str = sys.argv[i+1]
+                elif arg == '--days' and i+1 < len(sys.argv):
+                    days = int(sys.argv[i+1])
+            
+            if date_str:
+                generator.generate_daily_report(date_str)
+            else:
+                generator.generate_date_range_report(days)
             
         elif cmd == 'heatmap':
-            from claude_statusline.activity_heatmap import main as heatmap_main
-            heatmap_main()
+            from claude_statusline.activity_heatmap import ActivityHeatmapGenerator
+            generator = ActivityHeatmapGenerator()
+            
+            # Parse subcommands
+            if len(sys.argv) > 2:
+                subcmd = sys.argv[2]
+                if subcmd == '--monthly':
+                    month = None
+                    year = None
+                    # Check for month/year arguments
+                    for i, arg in enumerate(sys.argv[3:], 3):
+                        if arg == '--month' and i+1 < len(sys.argv):
+                            month = int(sys.argv[i+1])
+                        elif arg == '--year' and i+1 < len(sys.argv):
+                            year = int(sys.argv[i+1])
+                    generator.generate_monthly_calendar(month, year)
+                elif subcmd == '--peak':
+                    generator.analyze_peak_hours()
+                else:
+                    generator.generate_weekly_heatmap()
+            else:
+                generator.generate_weekly_heatmap()
             
         elif cmd == 'summary':
-            from claude_statusline.summary_report import main as summary_main
-            summary_main()
+            from claude_statusline.summary_report import SummaryReportGenerator
+            generator = SummaryReportGenerator()
+            
+            # Parse subcommands
+            if len(sys.argv) > 2:
+                subcmd = sys.argv[2]
+                if subcmd == '--weekly':
+                    weeks = int(sys.argv[3]) if len(sys.argv) > 3 else 1
+                    generator.generate_weekly_summary(weeks)
+                elif subcmd == '--monthly':
+                    months = int(sys.argv[3]) if len(sys.argv) > 3 else 1
+                    generator.generate_monthly_summary(months)
+                elif subcmd == '--all':
+                    generator.generate_all_time_summary()
+                else:
+                    generator.generate_all_time_summary()
+            else:
+                generator.generate_all_time_summary()
             
         elif cmd == 'models':
-            from claude_statusline.model_usage import main as models_main
-            models_main()
+            from claude_statusline.model_usage import ModelUsageAnalyzer
+            analyzer = ModelUsageAnalyzer()
+            
+            # Parse subcommands
+            if len(sys.argv) > 2 and sys.argv[2] == '--trends':
+                days = int(sys.argv[3]) if len(sys.argv) > 3 else 30
+                analyzer.analyze_model_trends(days)
+            else:
+                analyzer.analyze_model_usage()
             
         elif cmd == 'analytics':
             from claude_statusline.analytics_cli import AnalyticsCLI
@@ -204,12 +279,43 @@ def main():
             analytics.run()
             
         elif cmd == 'budget':
-            from claude_statusline.budget_manager import main as budget_main
-            budget_main()
+            from claude_statusline.budget_manager import BudgetManager
+            manager = BudgetManager()
+            
+            # Parse subcommands
+            if len(sys.argv) > 2:
+                subcmd = sys.argv[2]
+                if subcmd == 'set':
+                    # Set budget limits
+                    period = sys.argv[3] if len(sys.argv) > 3 else 'monthly'
+                    limit = float(sys.argv[4]) if len(sys.argv) > 4 else 200.0
+                    manager.set_budget_limit(period, limit)
+                elif subcmd == 'status':
+                    manager.show_budget_status()
+                elif subcmd == 'dashboard':
+                    manager.show_dashboard()
+                else:
+                    manager.show_dashboard()
+            else:
+                manager.show_dashboard()
             
         elif cmd == 'update-prices':
-            from claude_statusline.update_prices import main as prices_main
-            prices_main()
+            from claude_statusline.update_prices import PriceUpdater
+            updater = PriceUpdater()
+            
+            # Parse subcommands
+            force = False
+            verify = False
+            for arg in sys.argv[2:]:
+                if arg == '--force':
+                    force = True
+                elif arg == '--verify':
+                    verify = True
+            
+            if verify:
+                updater.verify_prices()
+            else:
+                updater.update_prices(force=force)
             
         elif cmd == 'verify':
             from claude_statusline.verify_costs import main as verify_main
@@ -218,6 +324,57 @@ def main():
         elif cmd == 'rotate':
             from claude_statusline.statusline_rotator import main as rotate_main
             rotate_main()
+            
+        elif cmd == 'trends':
+            from claude_statusline.trend_analyzer import TrendAnalyzer
+            analyzer = TrendAnalyzer()
+            
+            # Parse subcommands
+            days = 30
+            show_all = True
+            
+            for i, arg in enumerate(sys.argv[2:], 2):
+                if arg == '--days' and i+1 < len(sys.argv):
+                    days = int(sys.argv[i+1])
+                elif arg == '--trends':
+                    show_all = False
+                    analyzer.analyze_usage_trends(days)
+                elif arg == '--productivity':
+                    show_all = False
+                    analyzer.analyze_productivity_patterns()
+                elif arg == '--efficiency':
+                    show_all = False
+                    analyzer.analyze_model_efficiency()
+                elif arg == '--insights':
+                    show_all = False
+                    analyzer.generate_insights_report()
+            
+            if show_all:
+                analyzer.analyze_usage_trends(days)
+                analyzer.analyze_productivity_patterns()
+                analyzer.analyze_model_efficiency()
+                analyzer.generate_insights_report()
+        
+        elif cmd == 'health':
+            from claude_statusline.health_monitor import HealthMonitor
+            monitor = HealthMonitor()
+            
+            # Parse subcommands
+            if len(sys.argv) > 2:
+                subcmd = sys.argv[2]
+                if subcmd == '--full':
+                    monitor.run_comprehensive_health_check()
+                elif subcmd == '--quick':
+                    monitor.quick_status_check()
+                elif subcmd == '--diagnostic':
+                    monitor.generate_diagnostic_report()
+                elif subcmd == '--monitor':
+                    duration = int(sys.argv[3]) if len(sys.argv) > 3 else 60
+                    monitor.monitor_performance(duration)
+                else:
+                    monitor.quick_status_check()
+            else:
+                monitor.quick_status_check()
             
         else:
             print(f"Unknown command: {cmd}")

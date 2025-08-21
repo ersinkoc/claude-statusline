@@ -5,7 +5,7 @@ Real-time session tracking and analytics for Claude Code, displaying usage metri
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-1.8.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.9.0-green.svg)
 
 ## Features
 
@@ -27,6 +27,8 @@ Real-time session tracking and analytics for Claude Code, displaying usage metri
 
 ### Analytics & Reporting
 - 📈 **Advanced Usage Analytics** - Comprehensive productivity metrics and insights
+- 📊 **Trend Analysis** - Usage trends, productivity patterns, and AI-powered insights (NEW!)
+- 🏥 **Health Monitoring** - System health diagnostics and performance monitoring (NEW!)
 - 💹 **Budget Management** - Set spending limits and track budget compliance
 - 📊 **Usage Patterns Analysis** - Behavioral insights and optimization recommendations
 - 📉 **Cost Forecasting** - Predict future costs based on usage trends
@@ -98,7 +100,7 @@ pip install dist/claude_statusline-*.whl
 pip install claude-statusline
 
 # Install from local wheel
-pip install dist/claude_statusline-1.8.0-py3-none-any.whl
+pip install dist/claude_statusline-1.9.0-py3-none-any.whl
 
 # Development installation
 git clone https://github.com/ersinkoc/claude-statusline.git
@@ -149,23 +151,21 @@ claude-statusline status          # Current session status
 claude-statusline daemon          # Manage background daemon
 claude-statusline rebuild         # Rebuild database
 
-# Analytics & Reporting (NEW!)
+# Analytics & Reporting
 claude-statusline costs           # Cost analysis
 claude-statusline daily           # Daily report
 claude-statusline sessions        # Session details
 claude-statusline heatmap         # Activity heatmap
 claude-statusline summary         # Summary statistics
-claude-analytics dashboard        # Comprehensive usage analytics (NEW!)
-claude-analytics productivity     # Productivity metrics (NEW!)
-claude-analytics patterns         # Usage pattern analysis (NEW!)
-claude-analytics export           # Export analytics data (NEW!)
+claude-statusline models          # Model usage statistics
+claude-statusline analytics       # Advanced usage analytics
 
-# Budget Management (NEW!)
-claude-budget dashboard           # Budget overview & alerts
-claude-budget set <period> <amt>  # Set budget limits
-claude-budget model-limit         # Set model-specific limits
-claude-budget project <name> <$>  # Project budget tracking
-claude-budget export              # Export budget reports
+# NEW v1.9.0 Features!
+claude-statusline trends          # Comprehensive trend analysis
+claude-statusline health          # System health monitoring
+
+# Budget Management
+claude-statusline budget          # Budget management and tracking
 
 # Configuration and Themes
 claude-statusline theme           # Interactive theme manager
@@ -179,37 +179,46 @@ claude-statusline rotate          # Toggle statusline rotation
 
 ### Usage Examples
 
-#### 📊 Analytics Dashboard
+#### 📊 Advanced Analytics (NEW v1.9.0!)
 ```bash
-# View comprehensive analytics for last 30 days
-claude-analytics dashboard --days 30
+# Comprehensive trend analysis
+claude-statusline trends           # All trend analyses
+claude-statusline trends --trends  # Usage trends only
+claude-statusline trends --productivity  # Productivity patterns
+claude-statusline trends --efficiency    # Model efficiency analysis
+claude-statusline trends --insights      # AI-powered insights
 
-# Get productivity metrics with recommendations
-claude-analytics productivity --days 7
+# System health monitoring
+claude-statusline health           # Quick health check
+claude-statusline health --full    # Comprehensive health check
+claude-statusline health --diagnostic  # Generate diagnostic report
+claude-statusline health --monitor 120  # Monitor performance for 2 minutes
+```
 
-# Analyze usage patterns and behaviors
-claude-analytics patterns --days 30
+#### 📈 Usage Analytics
+```bash
+# Session analysis
+claude-statusline sessions         # Analyze all sessions
+claude-statusline sessions --patterns  # Usage patterns
+claude-statusline sessions --top 10    # Top 10 sessions
 
-# Export detailed analytics report
-claude-analytics export --days 30 --format json
+# Cost analysis
+claude-statusline costs            # Cost breakdown
+claude-statusline costs --trends   # Cost trends analysis
+
+# Daily and summary reports
+claude-statusline daily            # Today's report
+claude-statusline daily --days 7   # Last 7 days
+claude-statusline summary --weekly # Weekly summary
+claude-statusline summary --monthly # Monthly summary
 ```
 
 #### 💰 Budget Management
 ```bash
-# Set monthly budget with alerts
-claude-budget set monthly 500
-
-# Set daily limit for specific model
-claude-budget model-limit claude-3-5-sonnet 10.0 --monthly 300
-
-# View budget status with spending trends
-claude-budget dashboard
-
-# Set project-specific budget
-claude-budget project "MyApp Development" 1000 --start 2025-01-01 --end 2025-03-31
-
-# Export budget report
-claude-budget export --format csv
+# Budget dashboard and management
+claude-statusline budget           # Budget dashboard
+claude-statusline budget set monthly 500     # Set monthly budget
+claude-statusline budget status    # Budget status
 ```
 
 #### 🎨 Theme Selection
@@ -478,4 +487,4 @@ claude-statusline theme current           # Show current theme
 
 ---
 
-**Current Version**: 1.8.0 | **Last Updated**: 2025-08-21 | **Package**: `claude-statusline`
+**Current Version**: 1.9.0 | **Last Updated**: 2025-08-21 | **Package**: `claude-statusline`
