@@ -10,7 +10,7 @@
     "format_mode": "colorful",
     "enable_rotation": false,
     "rotation_interval": 10,
-    "template": "compact",
+    "template": "ohmyposh_style",
     "enable_colors": true,
     "color_scheme": {
       "model": "cyan",
@@ -57,5 +57,8 @@
     "max_memory_usage_mb": 512,
     "database_rebuild_threshold_hours": 24,
     "cleanup_old_sessions_days": 90
-  }
+  },
+  "template": "pro",
+  "current_theme": "cyber_matrix_pro",
+  "theme_system": "unified"
 }
