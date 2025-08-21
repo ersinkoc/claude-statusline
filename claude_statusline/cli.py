@@ -72,7 +72,7 @@ def main():
         sys.exit(0)
     
     if cmd in ['-v', '--version', 'version']:
-        print("claude-statusline v1.7.0")
+        print("claude-statusline v1.8.0")
         sys.exit(0)
     
     # Handle commands
