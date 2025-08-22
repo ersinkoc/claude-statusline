@@ -36,9 +36,7 @@ from .data_directory_utils import resolve_data_directory
 from .instance_manager import InstanceManager
 from .safe_file_operations import safe_json_read, safe_json_write
 from .statusline_rotator import StatuslineRotator
-from .unified_theme_system import THEME_SYSTEM, safe_unicode_print
-# from claude_native_formatter import ClaudeNativeFormatter
-# from system_startup import SystemStartupManager
+from .unified_powerline_system import UNIFIED_POWERLINE
 from .console_utils import safe_print
 
 
@@ -87,8 +85,13 @@ class StatuslineDisplay:
         # Get template from config
         self.template_name = self.config.get('display', {}).get('template', 'compact')
         
-        # Use unified theme system
-        self.theme_system = THEME_SYSTEM
+        # Use new enhanced systems
+        self.theme_system = UNIFIED_POWERLINE
+        # All functionality now in UNIFIED_POWERLINE
+        
+        # Load selected theme
+        theme_config = safe_json_read(self.data_dir / "theme_config.json") or {}
+        self.current_theme = theme_config.get('current_theme', 'nord')
         
         # Rotating statusline for variety
         self.statusline_rotator = StatuslineRotator(data_dir=self.data_dir)
@@ -670,17 +673,16 @@ class StatuslineDisplay:
         return True
     
     def _format_session_display(self, session_data: Dict[str, Any]) -> str:
-        """Format the main session display using appropriate formatter"""
+        """Format the main session display using unified powerline system"""
         try:
             # Check if rotation is enabled
             if self.enable_rotation:
-                # Use rotating content
+                # Use rotating content (keep for compatibility)
                 result = self.statusline_rotator.get_rotated_content(session_data)
             else:
-                # Use unified theme system with extensive data for professional themes
-                theme_data = self._build_comprehensive_theme_data(session_data)
-                current_theme = self.theme_system.get_current_theme()
-                result = self.theme_system.apply_theme(current_theme, theme_data)
+                # Use UNIFIED POWERLINE SYSTEM - TEK SİSTEM
+                current_theme = UNIFIED_POWERLINE.get_current_theme()
+                result = UNIFIED_POWERLINE.render_theme(current_theme)
                 
             # Handle Unicode output safely for nerd fonts
             final_result = self._handle_unicode_output(result)

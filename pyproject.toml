@@ -57,8 +57,8 @@ claude-statusline = "claude_statusline.cli:main"
 claude-status = "claude_statusline.statusline:main"
 claude-daemon = "claude_statusline.daemon:main"
 claude-rebuild = "claude_statusline.rebuild:main"
-claude-theme = "claude_statusline.unified_theme_system:main"
-claude-analytics = "claude_statusline.usage_analytics:main"
+claude-theme = "claude_statusline.interactive_theme_manager:main"
+claude-analytics = "claude_statusline.analytics_cli:main"
 claude-budget = "claude_statusline.budget_manager:main"
 
 [project.optional-dependencies]

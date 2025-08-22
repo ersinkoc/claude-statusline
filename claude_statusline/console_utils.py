@@ -13,6 +13,7 @@ Key Features:
 """
 
 import sys
+import os
 import platform
 from typing import Dict, Any
 
@@ -169,6 +170,29 @@ console = SafeConsoleOutput()
 def safe_print(text: str, end: str = '\n', flush: bool = False):
     """Global function for safe console printing"""
     console.safe_print(text, end=end, flush=flush)
+
+
+def safe_unicode_print(text: str) -> str:
+    """Force UTF-8 Unicode output with nerd font support"""
+    
+    # Force UTF-8 output on Windows
+    if os.name == 'nt':
+        try:
+            # Set console to UTF-8 mode
+            import subprocess
+            subprocess.run(['chcp', '65001'], capture_output=True, shell=True)
+            
+            # Try to write directly to stdout buffer as UTF-8
+            if hasattr(sys.stdout, 'buffer'):
+                encoded = text.encode('utf-8')
+                sys.stdout.buffer.write(encoded)
+                sys.stdout.buffer.flush()
+                return ""  # Already printed
+        except Exception:
+            pass
+    
+    # Return text for normal printing
+    return text
 
 
 def format_for_console(text: str) -> str:

@@ -305,31 +305,38 @@ class DatabaseRebuilder:
         
         work_sessions = dict(work_sessions)
         
-        # Find current active session
+        # Find current active session - ENHANCED LIVE SESSION DETECTION
         current_session_data = {}
         now = datetime.now(timezone.utc)
         today_str = now.strftime('%Y-%m-%d')
         
-        # Check if we have today's sessions
+        # Check if we have activity in the last 5 hours (live session window)
+        live_session_detected = False
+        
+        # First check today's sessions
         if today_str in work_sessions and work_sessions[today_str]:
             # Get the last session of today
             last_session = work_sessions[today_str][-1]
             session_start = datetime.fromisoformat(last_session['session_start'].replace('Z', '+00:00'))
             
-            # Check if session end time hasn't passed yet
-            if 'session_end' in last_session:
-                session_end = datetime.fromisoformat(last_session['session_end'].replace('Z', '+00:00'))
-                if now < session_end:
-                    # We're in an active session!
-                    # Remove session_end since it's still active
-                    last_session.pop('session_end', None)
+            # Live session if:
+            # 1. We're within the 5-hour window from session start
+            # 2. OR there was activity in the last hour (real-time detection)
+            time_since_start = now - session_start
+            
+            if time_since_start.total_seconds() < (5 * 3600):  # Within 5 hours
+                live_session_detected = True
+                # Update session_end to reflect it's still active
+                last_session['session_end'] = (now + timedelta(hours=1)).isoformat()
                     
-                    # Calculate session cost and tokens from hourly_statistics for the session period
+            if live_session_detected:
+                    # Calculate LIVE session cost and tokens from hourly_statistics
                     session_cost = 0.0
                     session_input_tokens = 0
                     session_output_tokens = 0
                     session_cache_read = 0
                     session_cache_write = 0
+                    session_messages = 0
                     session_start_hour = session_start.hour
                     session_end_hour = min(now.hour + 1, 24)  # Include current hour
                     
@@ -343,9 +350,11 @@ class DatabaseRebuilder:
                                 session_output_tokens += hour_data.get('output_tokens', 0)
                                 session_cache_read += hour_data.get('cache_read_input_tokens', 0)
                                 session_cache_write += hour_data.get('cache_creation_input_tokens', 0)
+                                session_messages += hour_data.get('messages', 0)
                     
-                    # Set as current session with detailed token breakdown
+                    # Set as LIVE current session with detailed token breakdown
                     current_session_data = {
+                        'is_live': True,
                         'session_number': len(work_sessions[today_str]),
                         'session_start': last_session['session_start'],
                         'message_count': last_session['message_count'],

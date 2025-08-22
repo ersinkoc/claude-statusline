@@ -89,6 +89,9 @@ Pipfile.lock
 # poetry
 poetry.lock
 
+# pdm
+.pdm.toml
+
 # PEP 582
 __pypackages__/
 
@@ -132,50 +135,46 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# IDE settings
+# VS Code
 .vscode/
+*.code-workspace
+
+# PyCharm
 .idea/
-*.swp
-*.swo
-*~
-.DS_Store
 
-# Claude Statusline specific
-data/
-logs/
-*.lock
-.live_session_tracker.lock
-.orchestrator.lock
-.database_builder.lock
-claude_stdin_debug.json
-claude_stdin_error.txt
-live_session.json
-smart_sessions_db.json
-data-statusline/
-.claude/
-
-# User configuration (keep examples)
-claude_settings_personal.json
-config_personal.json
-
-# Temporary files
-*.tmp
-*.bak
-*.backup
-nul
-
-# Windows specific
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# macOS specific
+# macOS
 .DS_Store
 .AppleDouble
 .LSOverride
 
-# Linux specific
-.directory
-.Trash-*
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
 
-.pypirc
+# Test files
+test_*.py
+demo_*.py
+example_*.py
+*_test.py
+*_demo.py
+*_example.py
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+
+# Project specific
+/temp/
+/tmp/
+/scratch/
+*.old
+*.backup

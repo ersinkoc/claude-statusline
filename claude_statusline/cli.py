@@ -29,7 +29,10 @@ Core Commands:
   status          Show current session status
   daemon          Manage background daemon (--start, --status, --stop)
   rebuild         Rebuild database from JSONL files
-  theme           Theme management (list, select, create, apply, preview)
+  theme           Interactive theme browser (100 themes)
+  theme build     Create custom themes
+  theme list      List all themes
+  theme apply     Apply specific theme
 
 Analytics:
 ----------
@@ -81,7 +84,7 @@ def main():
     try:
         if cmd == 'status':
             from claude_statusline.statusline import StatuslineDisplay
-            from claude_statusline.unified_theme_system import safe_unicode_print
+            from claude_statusline.console_utils import safe_unicode_print
             result = StatuslineDisplay().display()
             
             # Handle Unicode output safely
@@ -95,48 +98,30 @@ def main():
                     print(safe_output)
             
         elif cmd == 'theme':
-            from claude_statusline.unified_theme_system import THEME_SYSTEM
-            
+            # Theme management - interactive or simple
             if len(sys.argv) > 2:
                 subcmd = sys.argv[2]
-                if subcmd == 'list':
-                    try:
-                        THEME_SYSTEM.list_themes()
-                    except UnicodeEncodeError:
-                        # Fallback to safe listing
-                        print("Theme listing with Unicode encoding issue - using safe mode")
-                        themes = THEME_SYSTEM.get_all_themes()
-                        for name, theme in themes.items():
-                            print(f"  • {theme['name']} - {theme['description']}")
-                elif subcmd == 'select':
-                    THEME_SYSTEM.select_theme_interactive()
-                elif subcmd == 'create':
-                    THEME_SYSTEM.create_custom_theme()
-                elif subcmd == 'preview':
-                    if len(sys.argv) > 3:
-                        from claude_statusline.unified_theme_system import safe_unicode_print
-                        preview_result = THEME_SYSTEM.preview_theme(sys.argv[3])
-                        safe_output = safe_unicode_print(preview_result)
-                        if safe_output:
-                            print(safe_output)
-                    else:
-                        print("Usage: theme preview <theme_name>")
-                elif subcmd == 'apply':
-                    if len(sys.argv) > 3:
-                        if THEME_SYSTEM.set_current_theme(sys.argv[3]):
-                            print(f"[OK] Theme '{sys.argv[3]}' applied")
-                        else:
-                            print(f"[X] Failed to apply theme")
-                    else:
-                        print("Usage: theme apply <theme_name>")
+                if subcmd in ['interactive', 'browse', 'i']:
+                    # Interactive theme browser
+                    from claude_statusline.interactive_theme_manager import InteractiveThemeManager
+                    manager = InteractiveThemeManager()
+                    manager.show_live_preview()
+                elif subcmd in ['build', 'builder', 'b']:
+                    # Theme builder
+                    from claude_statusline.interactive_theme_manager import InteractiveThemeManager
+                    manager = InteractiveThemeManager()
+                    manager.theme_builder()
                 else:
-                    # Try as theme name
-                    if THEME_SYSTEM.set_current_theme(subcmd):
-                        print(f"[OK] Theme '{subcmd}' applied")
-                    else:
-                        print(f"Unknown command: {subcmd}")
+                    # Original simple theme selector for list/apply/preview
+                    from claude_statusline.simple_theme_selector import main as theme_main
+                    sys.argv = ['theme'] + sys.argv[2:]
+                    theme_main()
             else:
-                THEME_SYSTEM.select_theme_interactive()
+                # Default to interactive browser
+                print("Starting interactive theme browser...")
+                from claude_statusline.interactive_theme_manager import InteractiveThemeManager
+                manager = InteractiveThemeManager()
+                manager.show_live_preview()
                 
         elif cmd == 'rebuild':
             print("=== DATABASE REBUILD ===")
