@@ -478,4 +478,7 @@ claude-statusline theme current           # Show current theme
 
 ---
 
+
+
 **Current Version**: 1.8.0 | **Last Updated**: 2025-08-21 | **Package**: `claude-statusline`
+
