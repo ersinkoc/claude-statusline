@@ -5,7 +5,7 @@ Real-time session tracking and analytics for Claude Code with 100+ powerline the
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-1.9.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.9.1-green.svg)
 
 ## Features
 
@@ -18,13 +18,15 @@ Real-time session tracking and analytics for Claude Code with 100+ powerline the
 - ⚡ **Lightweight** - Minimal dependencies (only psutil)
 - 📦 **Easy Installation** - Available as a Python package
 
-### Powerline Themes (NEW!)
+### Powerline Themes (v1.9.1 - NEW!)
 - 🎨 **100 Professional Themes** - Carefully designed powerline themes with logical widget grouping
 - 🌈 **Advanced RGB Colors** - True color output with soft, pleasant color schemes
 - 🔧 **Interactive Theme Browser** - Navigate themes with live preview and search
 - 🎯 **Custom Theme Builder** - Create and save your own powerline designs
 - ⚡ **Real-time Data** - Live token counts, cache efficiency, and session metrics
 - 📱 **Smart Widget Organization** - Related widgets grouped together (tokens, time, etc.)
+- 📊 **Two-Line Display** - Progress bar on second line showing session completion (◼◻)
+- ⧂ **Visual Enhancements** - Refined Unicode characters for softer appearance
 
 ### Analytics & Reporting
 - 📈 **Advanced Usage Analytics** - Comprehensive productivity metrics and insights

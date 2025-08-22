@@ -711,7 +711,7 @@ class StatuslineDisplay:
                     # Output directly to buffer with UTF-8 encoding
                     encoded = text.encode('utf-8')
                     sys.stdout.buffer.write(encoded)
-                    sys.stdout.buffer.write(b'\n')  # Add newline
+                    # Don't add extra newline - let the text contain its own newlines
                     sys.stdout.buffer.flush()
                     
                     # Always return the actual text for processing
@@ -1365,7 +1365,13 @@ def main():
             pass
         else:
             # ASCII content or non-powerline Unicode - use safe print
-            safe_print(output)
+            # For multi-line output, print without adding extra newline
+            if '\n' in output:
+                # Multi-line output - print as is
+                print(output, end='')
+            else:
+                # Single line - use safe print
+                safe_print(output)
         
         return 0
         

@@ -5,6 +5,35 @@ All notable changes to Claude Statusline will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.1] - 2025-08-22
+
+### 🎨 Visual Enhancements
+
+#### Two-Line Powerline Display (NEW!)
+- **Progress Bar on Second Line** - Visual session progress with block characters
+- **Session Progress Tracking** - Shows completion percentage (0-100%)
+- **Time Display** - Elapsed time on left, remaining time on right of progress bar
+- **Dynamic Colors** - Green (fresh), Yellow (mid), Orange (ending) based on progress
+- **Unicode Block Characters** - Clean ◼ (filled) and ◻ (empty) blocks for progress
+
+#### Refined Visual Elements
+- **⧂ Starting Character** - Circle with small circle for softer line beginnings
+- **❱ Chevron Separators** - Added directional flow indicators in progress bar
+- **Model Name Fix** - "Opus-4" instead of "Op-4" for better clarity
+- **Improved Time Formatting** - Consistent HH:MM format with zero padding
+
+### Fixed
+- **Session elapsed time formatting** - Added proper timezone handling
+- **Progress calculation** - Fixed timezone issues in session progress
+- **Multi-line output** - Proper handling of newlines in statusline display
+- **Unicode output** - Better buffer handling for Windows terminals
+
+### Technical Details
+- Updated `unified_powerline_system.py` with `_render_progress_bar()` method
+- Added `_calculate_session_progress()` for accurate progress tracking
+- Modified statusline output to handle multi-line content correctly
+- Enhanced Unicode character handling for cross-platform compatibility
+
 ## [1.9.0] - 2025-08-22
 
 ### 🚀 Major New Features

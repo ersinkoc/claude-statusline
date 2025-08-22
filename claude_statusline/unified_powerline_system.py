@@ -318,7 +318,7 @@ class UnifiedPowerlineSystem:
             if widget_type == 'model_short':
                 model = self.session_data.get('model', '')
                 if 'opus-4' in model:
-                    return 'Op-4'
+                    return 'Opus-4'
                 elif 'sonnet-4' in model:
                     return 'Sonnet-4'
                 elif 'sonnet' in model:
@@ -331,13 +331,15 @@ class UnifiedPowerlineSystem:
                     from datetime import timezone
                     start_str = self.session_data.get('session_start')
                     if start_str:
+                        if 'T' in start_str and '+' not in start_str and 'Z' not in start_str:
+                            start_str += '+00:00'
                         start_time = datetime.fromisoformat(start_str.replace('Z', '+00:00'))
                         now = datetime.now(timezone.utc)
                         elapsed = now - start_time
                         hours = int(elapsed.total_seconds() // 3600)
                         minutes = int((elapsed.total_seconds() % 3600) // 60)
                         if hours > 0:
-                            return f"{hours}h{minutes}m"
+                            return f"{hours}h{minutes:02d}m"
                         else:
                             return f"{minutes}m"
                 except:
@@ -498,7 +500,8 @@ class UnifiedPowerlineSystem:
         theme = self.themes[theme_name]
         segments = theme['segments']
         
-        result = ""
+        # First line - regular powerline segments
+        result = "⧂ "  # Start with circle with small circle icon
         
         for i, segment in enumerate(segments):
             # Get REAL widget value
@@ -532,7 +535,91 @@ class UnifiedPowerlineSystem:
                 final_triangle = '\x1b[0m' + color_info['fg'] + '\ue0b0' + '\x1b[0m'
                 result += final_triangle
         
+        # Second line - progress bar with block characters
+        result += "\n"
+        result += self._render_progress_bar()
+        
         return result
+    
+    def _render_progress_bar(self):
+        """Render a progress bar for the second line"""
+        # Calculate session progress
+        session_progress = self._calculate_session_progress()
+        
+        # Get session elapsed and remaining time
+        elapsed_str = self.get_widget_value('session_elapsed')
+        remaining_str = self.get_widget_value('session_remaining')
+        
+        # Progress bar settings
+        bar_width = 30
+        filled = int(bar_width * session_progress)
+        empty = bar_width - filled
+        
+        # Create block characters for progress
+        filled_blocks = '◼' * filled
+        empty_blocks = '◻' * empty
+        
+        # Choose colors
+        if session_progress < 0.33:
+            # Green for fresh session
+            bar_color = self.colors['soft_green']
+        elif session_progress < 0.66:
+            # Yellow for mid session
+            bar_color = self.colors['soft_yellow']
+        else:
+            # Orange/red for ending session
+            bar_color = self.colors['soft_orange']
+        
+        # Build progress bar with powerline style
+        progress_bar = "⧂ "  # Start with circle with small circle icon
+        
+        # Left segment with elapsed time
+        left_color = self.colors['soft_gray']
+        progress_bar += left_color['bg'] + left_color['text']
+        progress_bar += f" ⏱ {elapsed_str} "
+        progress_bar += '\x1b[0m'
+        
+        # Triangle transition
+        progress_bar += bar_color['bg'] + left_color['fg'] + '\ue0b0' + '\x1b[0m'
+        
+        # Progress bar segment
+        progress_bar += bar_color['bg'] + bar_color['text']
+        progress_bar += f" [{filled_blocks}{empty_blocks}] ❱ {session_progress*100:.0f}% "
+        progress_bar += '\x1b[0m'
+        
+        # Triangle transition
+        right_color = self.colors['soft_blue']
+        progress_bar += right_color['bg'] + bar_color['fg'] + '\ue0b0' + '\x1b[0m'
+        
+        # Right segment with remaining time
+        progress_bar += right_color['bg'] + right_color['text']
+        progress_bar += f" {remaining_str} ⏳ "
+        progress_bar += '\x1b[0m'
+        
+        # Final triangle
+        progress_bar += '\x1b[0m' + right_color['fg'] + '\ue0b0' + '\x1b[0m'
+        
+        return progress_bar
+    
+    def _calculate_session_progress(self):
+        """Calculate session progress (0.0 to 1.0)"""
+        try:
+            session_start = self.session_data.get('session_start')
+            if not session_start:
+                return 0.0
+            
+            from datetime import timedelta
+            if 'T' in session_start and '+' not in session_start and 'Z' not in session_start:
+                session_start += '+00:00'
+            start_dt = datetime.fromisoformat(session_start.replace('Z', '+00:00'))
+            now_dt = datetime.now(timezone.utc)
+            elapsed = now_dt - start_dt
+            total_duration = timedelta(hours=5)
+            
+            progress = elapsed.total_seconds() / total_duration.total_seconds()
+            return min(1.0, max(0.0, progress))
+        except:
+            return 0.0
     
     def render_simple_theme(self, theme_name):
         """Simple ASCII fallback for broken terminals"""
