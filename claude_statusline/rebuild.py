@@ -15,11 +15,18 @@ from typing import Dict, List, Any, Optional
 
 # Fix Windows console encoding
 if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+    try:
+        # Only wrap if not already wrapped
+        if not isinstance(sys.stdout, io.TextIOWrapper) or sys.stdout.encoding != 'utf-8':
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+        if not isinstance(sys.stderr, io.TextIOWrapper) or sys.stderr.encoding != 'utf-8':
+            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    except:
+        # If already wrapped or closed, skip
+        pass
 
-from .data_directory_utils import resolve_data_directory
-from .safe_file_operations import safe_json_read, safe_json_write
+from claude_statusline.data_directory_utils import resolve_data_directory
+from claude_statusline.safe_file_operations import safe_json_read, safe_json_write
 
 
 class DatabaseRebuilder:
@@ -91,6 +98,7 @@ class DatabaseRebuilder:
                     lines = f.readlines()
                 
                 file_messages = 0
+                processed_count = 0
                 
                 for line in lines:
                     try:
@@ -127,6 +135,13 @@ class DatabaseRebuilder:
                             output_tokens = usage.get('output_tokens', 0)
                             cache_creation = usage.get('cache_creation_input_tokens', 0)
                             cache_read = usage.get('cache_read_input_tokens', 0)
+                            
+                            # Debug: Check if we're getting real usage data
+                            if usage and (input_tokens > 0 or output_tokens > 0 or cache_creation > 0 or cache_read > 0):
+                                processed_count += 1
+                                total = input_tokens + output_tokens + cache_creation + cache_read
+                                if processed_count <= 3:  # Only log first few
+                                    print(f"  ✓ Found usage: in={input_tokens}, out={output_tokens}, cache_w={cache_creation}, cache_r={cache_read}, total={total}")
                             
                             # Calculate cost
                             cost = self._calculate_cost(model, usage)
@@ -205,7 +220,7 @@ class DatabaseRebuilder:
                         'session_end': session_end.isoformat(),
                         'message_count': 0,
                         'tokens': 0,
-                        'cost': 0.0,  # We don't track cost in work_sessions to avoid double counting with hourly_statistics
+                        'cost': 0.0,  # Will accumulate from hourly data
                         'models': [],
                         'primary_model': 'unknown'
                     }
@@ -213,9 +228,8 @@ class DatabaseRebuilder:
                 # Add hour data to current session
                 current_session['message_count'] += hour_data['messages']
                 current_session['tokens'] += hour_data['total_tokens']
-                # Don't accumulate cost in work_sessions - it's already tracked in hourly_statistics
-                # This avoids double counting
-                # current_session['cost'] += hour_data['cost']
+                # Accumulate cost from hourly data (CRITICAL FIX)
+                current_session['cost'] = current_session.get('cost', 0.0) + hour_data['cost']
                 
                 # Track models
                 for model in hour_data['models']:
@@ -248,7 +262,7 @@ class DatabaseRebuilder:
                         'session_end': session_end.isoformat(),
                         'message_count': hour_data['messages'],
                         'tokens': hour_data['total_tokens'],
-                        'cost': 0.0,  # Don't track cost in work_sessions to avoid double counting
+                        'cost': hour_data['cost'],  # Include cost from hourly data
                         'models': list(hour_data['models'].keys()),
                         'primary_model': 'unknown'
                     }
@@ -268,16 +282,26 @@ class DatabaseRebuilder:
                 work_sessions[date_str].append(current_session)
         
         # Convert defaultdicts to regular dicts for JSON serialization
-        hourly_statistics = {
-            date: {
-                hour: {
+        # Also determine primary_model for each hour
+        hourly_statistics_final = {}
+        for date, hours in hourly_statistics.items():
+            hourly_statistics_final[date] = {}
+            for hour, hour_data in hours.items():
+                # Determine primary model (most used model in this hour)
+                primary_model = None
+                max_messages = 0
+                for model_name, model_data in hour_data['models'].items():
+                    if model_data['messages'] > max_messages:
+                        max_messages = model_data['messages']
+                        primary_model = model_name
+                
+                hourly_statistics_final[date][hour] = {
                     **hour_data,
-                    'models': dict(hour_data['models'])
+                    'models': dict(hour_data['models']),
+                    'primary_model': primary_model or 'unknown'
                 }
-                for hour, hour_data in hours.items()
-            }
-            for date, hours in hourly_statistics.items()
-        }
+        
+        hourly_statistics = hourly_statistics_final
         
         work_sessions = dict(work_sessions)
         
@@ -300,23 +324,36 @@ class DatabaseRebuilder:
                     # Remove session_end since it's still active
                     last_session.pop('session_end', None)
                     
-                    # Calculate session cost from hourly_statistics for the session period
+                    # Calculate session cost and tokens from hourly_statistics for the session period
                     session_cost = 0.0
+                    session_input_tokens = 0
+                    session_output_tokens = 0
+                    session_cache_read = 0
+                    session_cache_write = 0
                     session_start_hour = session_start.hour
                     session_end_hour = min(now.hour + 1, 24)  # Include current hour
                     
                     if today_str in hourly_statistics:
                         for hour in range(session_start_hour, session_end_hour):
-                            hour_str = str(hour)
+                            hour_str = f"{hour:02d}:00"  # FIX: Use proper hour format like "06:00" not "6"
                             if hour_str in hourly_statistics[today_str]:
-                                session_cost += hourly_statistics[today_str][hour_str].get('cost', 0.0)
+                                hour_data = hourly_statistics[today_str][hour_str]
+                                session_cost += hour_data.get('cost', 0.0)
+                                session_input_tokens += hour_data.get('input_tokens', 0)
+                                session_output_tokens += hour_data.get('output_tokens', 0)
+                                session_cache_read += hour_data.get('cache_read_input_tokens', 0)
+                                session_cache_write += hour_data.get('cache_creation_input_tokens', 0)
                     
-                    # Set as current session
+                    # Set as current session with detailed token breakdown
                     current_session_data = {
                         'session_number': len(work_sessions[today_str]),
                         'session_start': last_session['session_start'],
                         'message_count': last_session['message_count'],
                         'tokens': last_session['tokens'],
+                        'input_tokens': session_input_tokens,
+                        'output_tokens': session_output_tokens,
+                        'cache_read_tokens': session_cache_read,
+                        'cache_write_tokens': session_cache_write,
                         'cost': session_cost,  # Use calculated cost from hourly_statistics
                         'model': last_session.get('primary_model', 'unknown'),
                         'last_update': now.isoformat()
@@ -370,7 +407,13 @@ class DatabaseRebuilder:
         cache_cost = (cache_creation / 1_000_000) * model_prices.get('cache_write_5m', 18.75)
         cache_read_cost = (cache_read / 1_000_000) * model_prices.get('cache_read', 1.5)
         
-        return input_cost + output_cost + cache_cost + cache_read_cost
+        total_cost = input_cost + output_cost + cache_cost + cache_read_cost
+        
+        # Debug logging for zero costs
+        if total_cost == 0 and (input_tokens > 0 or output_tokens > 0 or cache_creation > 0 or cache_read > 0):
+            print(f"  ⚠️ Zero cost despite tokens: model={model}, usage={usage}, prices={model_prices}")
+        
+        return total_cost
     
     def _get_model_prices(self, model: str) -> Dict:
         """Get pricing for a specific model"""

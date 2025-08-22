@@ -5,7 +5,7 @@ Real-time session tracking and analytics for Claude Code, displaying usage metri
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-1.4.0-green.svg)
+![Version](https://img.shields.io/badge/version-1.8.0-green.svg)
 
 ## Features
 
@@ -19,12 +19,13 @@ Real-time session tracking and analytics for Claude Code, displaying usage metri
 - 📦 **Easy Installation** - Available as a Python package
 
 ### Visual & Themes
-- 🎨 **86+ Display Templates** - Massive collection of themed statuslines
-- 🌈 **Colored Output** - Rich terminal colors with customizable schemes
-- 🔧 **Visual Theme Builder** - Interactive theme creator with live preview
+- 🎨 **100+ Epic Powerline Themes** - Professional powerline-style themes with nerd fonts and RGB colors
+- 🌈 **Advanced RGB Support** - True color output with gradient effects and smooth transitions
+- 🔧 **Unified Theme System** - Single management system for all themes and templates
 - 🎯 **Custom Themes** - Create and save your own statusline designs
+- ⚡ **Live Session Data** - Real-time token counts, cache efficiency, and I/O token tracking
 
-### Analytics & Reporting (NEW v1.4.0)
+### Analytics & Reporting
 - 📈 **Advanced Usage Analytics** - Comprehensive productivity metrics and insights
 - 💹 **Budget Management** - Set spending limits and track budget compliance
 - 📊 **Usage Patterns Analysis** - Behavioral insights and optimization recommendations
@@ -65,18 +66,20 @@ pip install dist/claude_statusline-*.whl
 
 **Example Outputs:**
 ```bash
-# Developer Themes
-◈ Opus 4.1 ● LIVE #3 ⎇ main 📁 MyProject Ln 51, Col 4.3M $10.15 ⏰ 1h20m 🖥️ 11% 🧠 52% 🔋85% UTF-8  # VSCode
-🧠 Opus 4.1  LIVE  📁 MyProject ⚡ main ↕ 533 msgs ∑ 46.2M tokens $ 98.778 ⏱️ 1h20m 🖥️ CPU: 21% RAM: 52% Session #3 | 23:42  # IntelliJ
+# Epic Powerline Themes with RGB Colors
+⚡ Opus 4.1 LIVE ● 533 msgs ⟨16.6M/16.6M⟩ $98.78 ▶ 1h20m  # ocean_tsunami_power
+🔥 [Opus-4.1] ⚡ACTIVE #3 📊 533↕ 💰$98.78 ⏱1:20 🔋85%  # fire_king
+🌊 Opus 4.1 ≋ LIVE ≋ 533 messages ≋ 16.6M tokens ≋ $98.78  # ocean_wave
 
-# Gaming Themes  
-🏹 [Opus 4.1] 🌍 MyProject Biome Day 3 ♥♥♥♥♥ 🍖🍖🍖🍖🍖 XP: 51 💎 4.3M ⛃ 10 Coins ⏰ 1h20m  # Minecraft
-◢NEURAL◤ [Opus 4.1] ⟦ONLINE⟧ CORP: MYPROJ RAM: 51GB CPU: 4.3MGHz €$ 10.2K SYS: 21% 52% NET: main TIME: 1h20m▒ ◢#003◤  # Cyberpunk
+# Professional Powerline with Nerd Fonts  
+ Opus 4.1  LIVE  533 msgs  16.6M tok  $98.78  85%  # With RGB backgrounds
+█ MODEL: Opus 4.1 █ STATUS: ACTIVE █ TOKENS: 16.6M █ COST: $98.78 █  # Block style
+▌Opus-4.1▐ ⟨LIVE⟩ │533│ ⟨16.6M⟩ ⟨$98.78⟩ ⟨1:20⟩  # Bracket style
 
-# Professional Themes
-🚀 NASA HOUSTON [Opus 4.1 MISSION CONTROL] GO/NO-GO: LIVE MISSION: CLAUDE-03 ALT: 5100km VEL: 7846m/s FUEL: 2% COMMS: 533 T- 1h20m | 23:42 UTC 🌍 EARTH ORBIT  # NASA
-₿ MYPC [Opus 4.1 BLOCKCHAIN] ● $98.778780 24H: 46.2M VOL: 533B MCAP: $52649090K MINING: 13% 53% ⛏️ #3 | 1h20m  # Crypto
-🏥 MEDICAL CENTER [DR. Opus 4.1] ● STABLE ID: PT-0003 ♥ 73BPM VISITS: 533 RECORDS: 46.2M BILL: $98.78 ⏰ 1h20m | 23:42 🚑 WARD-MyP  # Medical
+# Advanced Themes with All Fields
+🎯 Opus 4.1 | LIVE | Msgs: 533 | I/O: 8.3M/8.3M | Cache: 95% | Cost: $98.78 | Session: 1h20m
+💻 [OPUS-4.1] ▶ ACTIVE ▶ 533 messages ▶ 16.6M tokens (I:8.3M/O:8.3M) ▶ Cache efficiency: 95% ▶ $98.78
+⚡ Opus 4.1 ┃ LIVE #3 ┃ 533↕ ┃ Input: 8.3M ┃ Output: 8.3M ┃ Cache: 2.1M/105K ┃ Eff: 95% ┃ $98.78 ┃ 1:20
 ```
 
 📖 **[See all 80+ templates](#themes)** - Massive collection with professional themes!
@@ -95,7 +98,7 @@ pip install dist/claude_statusline-*.whl
 pip install claude-statusline
 
 # Install from local wheel
-pip install dist/claude_statusline-1.4.0-py3-none-any.whl
+pip install dist/claude_statusline-1.8.0-py3-none-any.whl
 
 # Development installation
 git clone https://github.com/ersinkoc/claude-statusline.git
@@ -121,7 +124,7 @@ Or if using from source:
 {
   "statusLine": {
     "command": "python",
-    "args": ["path/to/claude-statusline/statusline.py"]
+    "args": ["path/to/claude-statusline/claude_statusline/statusline.py"]
   }
 }
 ```
@@ -225,13 +228,16 @@ claude-statusline visual-builder
 
 ## How It Works
 
-1. **Data Collection**: Reads Claude Code's JSONL conversation logs
-2. **Processing**: Background daemon processes and aggregates data
-3. **Storage**: Maintains a local database of sessions and metrics
-4. **Display**: Formats data into a compact, readable statusline
+1. **Data Collection**: Reads Claude Code's JSONL conversation logs from `~/.claude/projects/*/`
+2. **Processing**: Background daemon (`daemon.py`) processes data every 60 seconds
+3. **Storage**: Maintains database in `~/.claude/data-statusline/smart_sessions_db.json`
+4. **Display**: Unified theme system formats data with 100+ themes
 
 ```
-Claude Code → JSONL Files → Daemon → Database → Statusline
+Claude Code → JSONL Files → Daemon → Database → Theme System → Statusline
+                              ↓
+                          Rebuild.py
+                     (Token extraction)
 ```
 
 ## Configuration
@@ -241,25 +247,32 @@ Claude Code → JSONL Files → Daemon → Database → Statusline
 ```json
 {
   "display": {
-    "template": "compact",      // Choose from 20+ templates
+    "template": "pro",           // Template style
+    "current_theme": "ocean_tsunami_power",  // Active theme
+    "theme_system": "unified",   // Theme system
     "enable_rotation": false,
-    "status_format": "compact"
+    "visual_mode": false
   },
   "monitoring": {
-    "session_duration_hours": 5
+    "session_duration_hours": 5,  // Session block duration
+    "db_update_interval": 60      // Daemon update interval
   }
 }
 ```
 
-### Template Selection
+### Theme Selection
 
 ```bash
-# Interactive template selector with preview
-claude-statusline template
+# Interactive theme browser with live preview
+claude-statusline theme
 
-# Quick template change
-claude-statusline template minimal
-claude-statusline template vim
+# List all available themes
+claude-statusline theme list
+
+# Apply a specific theme
+claude-statusline theme apply ocean_tsunami_power
+claude-statusline theme apply fire_king
+claude-statusline theme apply matrix_rain
 ```
 
 📖 **[Template Gallery](TEMPLATES.md)** - Preview all available statusline formats
@@ -276,28 +289,36 @@ claude-statusline update-prices
 
 ```
 claude-statusline/
-├── claude_statusline/      # Package directory
-│   ├── __init__.py        # Package initialization
-│   ├── cli.py             # Main CLI interface
-│   ├── statusline.py      # Core statusline display
-│   ├── daemon.py          # Background processor
-│   ├── templates.py       # Template definitions
-│   ├── config.json        # Configuration
-│   └── prices.json        # Model pricing
-├── tests/                 # Test suite
-├── docs/                  # Documentation
-├── setup.py              # Package setup
-├── pyproject.toml        # Modern package config
-└── README.md             # This file
+├── claude_statusline/              # Package directory
+│   ├── __init__.py                # Package initialization
+│   ├── __main__.py                # Package entry point
+│   ├── cli.py                     # Unified CLI interface
+│   ├── statusline.py              # Core statusline display
+│   ├── daemon.py                  # Background processor
+│   ├── rebuild.py                 # Database builder & token extraction
+│   ├── unified_theme_system.py    # Theme management system
+│   ├── unified_status.py          # Unified status display
+│   ├── epic_powerline_mega_themes.py  # 79+ powerline themes
+│   ├── ultimate_epic_themes.py    # 19+ advanced themes
+│   ├── professional_powerline.py  # Professional themes
+│   ├── config.json                # Configuration
+│   └── prices.json                # Model pricing
+├── tests/                         # Test suite
+├── dist/                          # Built packages
+├── setup.py                       # Package setup
+├── pyproject.toml                 # Modern package config
+└── README.md                      # This file
 ```
 
 ## Data Files
 
-- **Source**: `~/.claude/projects/*/` - Claude Code JSONL files
+- **Source**: `~/.claude/projects/*/` - Claude Code JSONL conversation logs
 - **Database**: `~/.claude/data-statusline/` - Processed data
-  - `smart_sessions_db.json` - Session database
-  - `live_session.json` - Current session
-  - `daemon_status.json` - Daemon status
+  - `smart_sessions_db.json` - Main session database with hourly statistics
+  - `daemon_status.json` - Daemon health status (PID, last update)
+  - `file_tracking.json` - JSONL file processing state
+  - `.unified_daemon.lock` - PID lock file for single instance
+  - `custom_themes.json` - User-created themes
 
 ## Development
 
@@ -417,7 +438,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Themes
 
-Claude Statusline offers **80+ unique themes** across multiple categories:
+Claude Statusline offers **100+ epic powerline themes** with RGB colors and nerd fonts:
 
 ### 🖥️ Developer Themes
 - **VSCode**, **IntelliJ**, **Sublime**, **Atom**, **Neovim**, **Emacs**
@@ -450,11 +471,14 @@ Claude Statusline offers **80+ unique themes** across multiple categories:
 ### ⚡ Quick Theme Commands
 ```bash
 claude-statusline theme                    # Interactive theme browser
-claude-statusline visual-builder          # Create custom themes
-claude-statusline theme apply vscode      # Apply specific theme
-claude-statusline theme search developer  # Search themes
+claude-statusline theme list              # List all themes
+claude-statusline theme apply <name>      # Apply specific theme
+claude-statusline theme current           # Show current theme
 ```
 
 ---
 
-**Current Version**: 1.4.0 | **Last Updated**: 2025-08-19 | **Package**: `claude-statusline`
+
+
+**Current Version**: 1.8.0 | **Last Updated**: 2025-08-21 | **Package**: `claude-statusline`
+

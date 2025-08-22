@@ -1,29 +1,48 @@
 #!/usr/bin/env python3
-import json
-from pathlib import Path
+"""Test statusline functionality"""
 
-# Load database
-db_file = Path.home() / ".claude" / "data-statusline" / "smart_sessions_db.json"
-db = json.load(open(db_file))
+import pytest
+from claude_statusline.formatter import SimpleVisualFormatter
 
-current_session = db.get('current_session', {})
-print("Current session from DB:")
-print(f"  model: {current_session.get('model', 'NOT SET')}")
-print(f"  primary_model: {current_session.get('primary_model', 'NOT SET')}")
-print(f"  session_number: {current_session.get('session_number')}")
-print(f"  message_count: {current_session.get('message_count')}")
+def test_formatter_basic():
+    """Test basic formatter functionality"""
+    formatter = SimpleVisualFormatter('aesthetic')
+    test_data = {
+        'primary_model': 'claude-sonnet-4-20250514',
+        'message_count': 42,
+        'tokens': 12500,
+        'cost': 15.3
+    }
+    
+    result = formatter.format_statusline(test_data)
+    assert 'Sonnet-4' in result
+    assert '42' in result
+    assert '12.5K' in result
 
-# Test the statusline
-from statusline import StatusLine
-sl = StatusLine()
+def test_aesthetic_themes():
+    """Test aesthetic themes work without errors"""
+    from claude_statusline.aesthetic_themes import AestheticThemes
+    aesthetic = AestheticThemes()
+    
+    test_data = {
+        'primary_model': 'claude-sonnet-4-20250514',
+        'message_count': 42,
+        'tokens': 12500,
+        'cost': 15.3
+    }
+    
+    # Test a few themes
+    themes_to_test = ['aesthetic', 'rainbow_line', 'powerline_pro']
+    for theme_name in themes_to_test:
+        result = aesthetic.get_theme(theme_name, test_data)
+        assert isinstance(result, str)
+        assert len(result) > 0
 
-# Get session data as statusline would
-session_data = sl._get_session_data()
-print("\nSession data in statusline:")
-print(f"  model: {session_data.get('model', 'NOT SET')}")
-print(f"  primary_model: {session_data.get('primary_model', 'NOT SET')}")
-print(f"  message_count: {session_data.get('message_count')}")
-
-# Test model info formatting
-model_info = sl._format_model_info(session_data)
-print(f"\nFormatted model info: {model_info}")
+def test_token_formatting():
+    """Test token formatting"""
+    formatter = SimpleVisualFormatter()
+    
+    # Test various token counts
+    assert '500 tok' in formatter._format_tokens(500)
+    assert '1.2k' in formatter._format_tokens(1200) 
+    assert '1.5M' in formatter._format_tokens(1500000)

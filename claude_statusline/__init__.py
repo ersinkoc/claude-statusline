@@ -7,17 +7,17 @@ cost tracking, usage analytics, and customizable statusline displays for
 Claude Code sessions.
 """
 
-__version__ = "1.4.0"
+__version__ = "1.8.0"
 __author__ = "Ersin Koç"
 __email__ = "ersinkoc@gmail.com"
 __license__ = "MIT"
 
-# Core imports (only import what actually exists)
-from .statusline import StatuslineDisplay, main as statusline_main
-from .daemon import UnifiedDaemon  
+# Core imports
 from .rebuild import DatabaseRebuilder
-from .formatter import SimpleVisualFormatter
-from .templates import StatuslineTemplates
+from .daemon import DaemonService
+from .unified_status import get_unified_status
+from .unified_theme_system import UnifiedThemeSystem, THEME_SYSTEM
+from .statusline import StatuslineDisplay, main as statusline_main
 
 __all__ = [
     # Version info
@@ -28,11 +28,12 @@ __all__ = [
     
     # Core classes
     "StatuslineDisplay",
-    "UnifiedDaemon",
     "DatabaseRebuilder",
-    "SimpleVisualFormatter",
-    "StatuslineTemplates",
+    "DaemonService",
+    "UnifiedThemeSystem",
+    "THEME_SYSTEM",
     
     # Functions
     "statusline_main",
+    "get_unified_status",
 ]

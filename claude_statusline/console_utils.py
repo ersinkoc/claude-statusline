@@ -16,19 +16,28 @@ import sys
 import platform
 from typing import Dict, Any
 
+# Enable colorama for colored output
 try:
     from colorama import init, Fore, Back, Style
     init(autoreset=True)
     COLORS_AVAILABLE = True
 except ImportError:
     COLORS_AVAILABLE = False
-    class Fore:
-        BLACK = WHITE = RED = GREEN = YELLOW = BLUE = MAGENTA = CYAN = ''
-        LIGHTBLACK_EX = LIGHTWHITE_EX = LIGHTRED_EX = LIGHTGREEN_EX = ''
-        LIGHTYELLOW_EX = LIGHTBLUE_EX = LIGHTMAGENTA_EX = LIGHTCYAN_EX = ''
-        RESET = ''
-    class Style:
-        BRIGHT = DIM = NORMAL = RESET_ALL = ''
+
+class Fore:
+    BLACK = WHITE = RED = GREEN = YELLOW = BLUE = MAGENTA = CYAN = ''
+    LIGHTBLACK_EX = LIGHTWHITE_EX = LIGHTRED_EX = LIGHTGREEN_EX = ''
+    LIGHTYELLOW_EX = LIGHTBLUE_EX = LIGHTMAGENTA_EX = LIGHTCYAN_EX = ''
+    RESET = ''
+
+class Style:
+    BRIGHT = DIM = NORMAL = RESET_ALL = ''
+
+class Back:
+    BLACK = WHITE = RED = GREEN = YELLOW = BLUE = MAGENTA = CYAN = ''
+    LIGHTBLACK_EX = LIGHTWHITE_EX = LIGHTRED_EX = LIGHTGREEN_EX = ''
+    LIGHTYELLOW_EX = LIGHTBLUE_EX = LIGHTMAGENTA_EX = LIGHTCYAN_EX = ''
+    RESET = ''
 
 
 class SafeConsoleOutput:
@@ -88,17 +97,36 @@ class SafeConsoleOutput:
             end: End character (default newline)
             flush: Whether to flush output buffer
         """
+        # Handle literal \\n in text (convert to actual newlines)
+        if '\\n' in text:
+            text = text.replace('\\n', '\n')
+        
+        # Always use sys.__stdout__ to bypass colorama issues completely
+        import sys
+        
+        # Convert emojis to ASCII fallbacks
+        safe_text = self._convert_emojis_to_ascii(text)
+        
+        # Strip any color codes that might be in the text
+        import re
+        safe_text = re.sub(r'\x1b\[[0-9;]*m', '', safe_text)
+        
+        # Ensure text is ASCII compatible
         try:
-            print(text, end=end, flush=flush)
-        except UnicodeEncodeError:
-            # Convert emojis to ASCII fallbacks
-            safe_text = self._convert_emojis_to_ascii(text)
-            try:
-                print(safe_text, end=end, flush=flush)
-            except UnicodeEncodeError:
-                # Last resort: strip all non-ASCII characters
-                ascii_text = safe_text.encode('ascii', 'ignore').decode('ascii')
-                print(ascii_text, end=end, flush=flush)
+            ascii_text = safe_text.encode('ascii', 'ignore').decode('ascii')
+            sys.__stdout__.write(ascii_text + end)
+            if flush:
+                sys.__stdout__.flush()
+        except:
+            # Ultimate fallback - write byte by byte
+            for char in safe_text:
+                try:
+                    sys.__stdout__.write(char)
+                except:
+                    sys.__stdout__.write('?')
+            sys.__stdout__.write(end)
+            if flush:
+                sys.__stdout__.flush()
     
     def _convert_emojis_to_ascii(self, text: str) -> str:
         """Convert Unicode emojis to ASCII alternatives"""
@@ -175,4 +203,12 @@ def print_colored(text: str, color: str = None, bold: bool = False):
     color_code = color_map.get(color.lower(), '')
     style_code = Style.BRIGHT if bold else ''
     
-    print(f"{style_code}{color_code}{text}{Style.RESET_ALL}")
+    try:
+        print(f"{style_code}{color_code}{text}{Style.RESET_ALL}", flush=True)
+    except UnicodeEncodeError:
+        # Fallback without Unicode characters
+        safe_text = text.encode('ascii', 'replace').decode('ascii')
+        print(f"{style_code}{color_code}{safe_text}{Style.RESET_ALL}", flush=True)
+    except Exception:
+        # Last resort - plain text
+        print(text)

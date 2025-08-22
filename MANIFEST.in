@@ -2,12 +2,7 @@
 include README.md
 include LICENSE
 include CHANGELOG.md
-include CONTRIBUTING.md
-include CODE_OF_CONDUCT.md
-include SECURITY.md
-include CLI.md
-include TEMPLATES.md
-include ARCHITECTURE.md
+include CLAUDE.md
 
 # Include requirements file
 include requirements.txt
@@ -20,8 +15,9 @@ include claude_statusline/prices.json
 recursive-include claude_statusline *.json
 recursive-include claude_statusline *.md
 
-# Include tests
+# Include tests and tools
 recursive-include tests *.py
+recursive-include tools *.py
 
 # Exclude compiled Python files
 global-exclude *.pyc

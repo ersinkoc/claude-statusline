@@ -5,228 +5,234 @@ Unified command-line interface for all Claude Statusline tools
 """
 
 import sys
+import os
 import argparse
-from typing import List, Dict, Any
 
-# Import all modules
-from . import statusline
-from . import daemon
-from . import rebuild
-from . import template_selector
-from . import daily_report
-from . import cost_analyzer
-from . import activity_heatmap
-from . import summary_report
-from . import session_analyzer
-from . import model_usage
-from . import check_costs
-from . import verify_costs
-from . import check_current
-from . import check_session_data
-from . import update_prices
-from . import statusline_rotator
-from . import theme_manager
-from . import usage_analytics
-from . import budget_manager
-
-# Tool categories and descriptions
-TOOLS = {
-    'core': {
-        'description': 'Core functionality',
-        'commands': {
-            'status': {
-                'module': statusline,
-                'help': 'Show current session status'
-            },
-            'daemon': {
-                'module': daemon,
-                'help': 'Manage background daemon'
-            },
-            'rebuild': {
-                'module': rebuild,
-                'help': 'Rebuild database from JSONL files'
-            }
-        }
-    },
-    'reports': {
-        'description': 'Analytics and reporting',
-        'commands': {
-            'sessions': {
-                'module': session_analyzer,
-                'help': 'Analyze session details'
-            },
-            'costs': {
-                'module': cost_analyzer,
-                'help': 'Analyze costs by model and time'
-            },
-            'daily': {
-                'module': daily_report,
-                'help': 'Generate daily usage report'
-            },
-            'heatmap': {
-                'module': activity_heatmap,
-                'help': 'Show activity heatmap'
-            },
-            'summary': {
-                'module': summary_report,
-                'help': 'Generate summary statistics'
-            },
-            'models': {
-                'module': model_usage,
-                'help': 'Show model usage statistics'
-            },
-            'analytics': {
-                'module': usage_analytics,
-                'help': 'Advanced usage analytics and insights'
-            }
-        }
-    },
-    'check': {
-        'description': 'Verification and validation',
-        'commands': {
-            'check-costs': {
-                'module': check_costs,
-                'help': 'Verify cost calculations'
-            },
-            'verify': {
-                'module': verify_costs,
-                'help': 'Verify cost integrity'
-            },
-            'current': {
-                'module': check_current,
-                'help': 'Check current session detection'
-            },
-            'session-data': {
-                'module': check_session_data,
-                'help': 'Check session data parsing'
-            }
-        }
-    },
-    'manage': {
-        'description': 'Configuration and management',
-        'commands': {
-            'template': {
-                'module': template_selector,
-                'help': 'Select statusline display template'
-            },
-            'update-prices': {
-                'module': update_prices,
-                'help': 'Update model pricing data'
-            },
-            'rotate': {
-                'module': statusline_rotator,
-                'help': 'Enable/disable statusline rotation'
-            },
-            'theme': {
-                'module': theme_manager,
-                'help': 'Interactive theme manager (search, preview, create custom themes)'
-            },
-            'budget': {
-                'module': budget_manager,
-                'help': 'Budget management and cost tracking'
-            },
-            'visual-builder': {
-                'module': None,  # Will handle directly
-                'help': 'Visual theme builder with live preview'
-            }
-        }
-    }
-}
+# Force UTF-8 encoding on Windows for Unicode/nerd font support
+if os.name == 'nt' and hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except:
+        pass
 
 def print_help():
-    """Print the help message"""
-    print("\nClaude Statusline CLI")
-    print("=====================\n")
-    print("Usage: claude-statusline <command> [options]\n")
-    
-    for category_name, category in TOOLS.items():
-        print(f"\n{category['description']}:")
-        print("-" * (len(category['description']) + 1))
-        
-        for cmd_name, cmd_info in category['commands'].items():
-            print(f"  {cmd_name:<15} {cmd_info['help']}")
-    
-    print("\nOptions:")
-    print("  -h, --help      Show this help message")
-    print("  -v, --version   Show version information")
-    print("\nExamples:")
-    print("  claude-statusline status")
-    print("  claude-statusline daemon --start")
-    print("  claude-statusline costs --today")
-    print("  claude-statusline theme")
-    print("  claude-statusline visual-builder")
+    """Print help message"""
+    print("""
+Claude Statusline CLI
+=====================
 
-def get_version():
-    """Get the package version"""
-    try:
-        from . import __version__
-        return __version__
-    except ImportError:
-        return "1.3.0"
+Usage: claude-statusline <command> [options]
 
-def find_command(cmd: str) -> tuple:
-    """Find command in tool categories"""
-    for category_name, category in TOOLS.items():
-        if cmd in category['commands']:
-            return category_name, category['commands'][cmd]
-    return None, None
+Core Commands:
+--------------
+  status          Show current session status
+  daemon          Manage background daemon (--start, --status, --stop)
+  rebuild         Rebuild database from JSONL files
+  theme           Theme management (list, select, create, apply, preview)
+
+Analytics:
+----------
+  sessions        Analyze session details
+  costs           Analyze costs by model and time
+  daily           Generate daily usage report
+  heatmap         Show activity heatmap
+  summary         Generate summary statistics
+  models          Show model usage statistics
+  analytics       Advanced usage analytics
+  budget          Budget management and tracking
+
+Utilities:
+----------
+  update-prices   Update model pricing data
+  verify          Verify cost calculations
+  rotate          Enable/disable statusline rotation
+
+Options:
+  -h, --help      Show this help message
+  -v, --version   Show version information
+
+Examples:
+  claude-statusline status
+  claude-statusline daemon --start
+  claude-statusline theme select
+  claude-statusline costs --today
+""")
 
 def main():
-    """Main entry point"""
-    # Handle no arguments
+    """Main CLI entry point"""
     if len(sys.argv) == 1:
         print_help()
         sys.exit(0)
     
-    # Get the command
     cmd = sys.argv[1]
     
-    # Handle special flags
     if cmd in ['-h', '--help', 'help']:
         print_help()
         sys.exit(0)
     
     if cmd in ['-v', '--version', 'version']:
-        print(f"claude-statusline v{get_version()}")
+        print("claude-statusline v1.8.0")
         sys.exit(0)
     
-    # Find the command
-    category, command_info = find_command(cmd)
-    
-    if not command_info:
-        print(f"Error: Unknown command '{cmd}'")
-        print("Run 'claude-statusline --help' for available commands")
-        sys.exit(1)
-    
-    # Execute the command by calling its main function
+    # Handle commands
     try:
-        # Handle special commands directly
-        if cmd == 'visual-builder':
-            from .theme_builder import main as visual_builder_main
-            visual_builder_main()
-            return
-        
-        # Pass remaining arguments to the module
-        original_argv = sys.argv.copy()
-        sys.argv = [cmd] + sys.argv[2:]
-        
-        # Call the module's main function
-        if hasattr(command_info['module'], 'main'):
-            command_info['module'].main()
+        if cmd == 'status':
+            from claude_statusline.statusline import StatuslineDisplay
+            from claude_statusline.unified_theme_system import safe_unicode_print
+            result = StatuslineDisplay().display()
+            
+            # Handle Unicode output safely
+            if result == "[Powerline theme active]":
+                # Unicode output was already sent directly to console
+                pass
+            else:
+                # Use safe Unicode printing for any remaining output
+                safe_output = safe_unicode_print(result)
+                if safe_output:  # If function returned text instead of printing
+                    print(safe_output)
+            
+        elif cmd == 'theme':
+            from claude_statusline.unified_theme_system import THEME_SYSTEM
+            
+            if len(sys.argv) > 2:
+                subcmd = sys.argv[2]
+                if subcmd == 'list':
+                    try:
+                        THEME_SYSTEM.list_themes()
+                    except UnicodeEncodeError:
+                        # Fallback to safe listing
+                        print("Theme listing with Unicode encoding issue - using safe mode")
+                        themes = THEME_SYSTEM.get_all_themes()
+                        for name, theme in themes.items():
+                            print(f"  • {theme['name']} - {theme['description']}")
+                elif subcmd == 'select':
+                    THEME_SYSTEM.select_theme_interactive()
+                elif subcmd == 'create':
+                    THEME_SYSTEM.create_custom_theme()
+                elif subcmd == 'preview':
+                    if len(sys.argv) > 3:
+                        from claude_statusline.unified_theme_system import safe_unicode_print
+                        preview_result = THEME_SYSTEM.preview_theme(sys.argv[3])
+                        safe_output = safe_unicode_print(preview_result)
+                        if safe_output:
+                            print(safe_output)
+                    else:
+                        print("Usage: theme preview <theme_name>")
+                elif subcmd == 'apply':
+                    if len(sys.argv) > 3:
+                        if THEME_SYSTEM.set_current_theme(sys.argv[3]):
+                            print(f"[OK] Theme '{sys.argv[3]}' applied")
+                        else:
+                            print(f"[X] Failed to apply theme")
+                    else:
+                        print("Usage: theme apply <theme_name>")
+                else:
+                    # Try as theme name
+                    if THEME_SYSTEM.set_current_theme(subcmd):
+                        print(f"[OK] Theme '{subcmd}' applied")
+                    else:
+                        print(f"Unknown command: {subcmd}")
+            else:
+                THEME_SYSTEM.select_theme_interactive()
+                
+        elif cmd == 'rebuild':
+            print("=== DATABASE REBUILD ===")
+            from claude_statusline.rebuild import DatabaseRebuilder
+            rebuilder = DatabaseRebuilder()
+            if rebuilder.rebuild_database():
+                print("[OK] Database rebuild completed")
+            else:
+                print("[X] Database rebuild failed")
+                
+        elif cmd == 'daemon':
+            from claude_statusline.daemon_manager import DaemonManager
+            manager = DaemonManager()
+            
+            daemon_cmd = sys.argv[2] if len(sys.argv) > 2 else '--help'
+            
+            if daemon_cmd == '--start':
+                print("=== STARTING DAEMON ===")
+                if manager.start_daemon_if_needed():
+                    print("[OK] Daemon started")
+                else:
+                    print("[X] Failed to start daemon")
+            elif daemon_cmd == '--status':
+                print("=== DAEMON STATUS ===")
+                if manager.is_daemon_running():
+                    print("[OK] Daemon is running")
+                else:
+                    print("[X] Daemon is not running")
+            elif daemon_cmd == '--stop':
+                print("=== STOPPING DAEMON ===")
+                from claude_statusline.daemon import DaemonService
+                daemon = DaemonService()
+                daemon.stop()
+            else:
+                print("Daemon commands:")
+                print("  daemon --start   Start the daemon")
+                print("  daemon --status  Check daemon status")
+                print("  daemon --stop    Stop the daemon")
+                
+        elif cmd == 'sessions':
+            from claude_statusline.session_analyzer import main as sessions_main
+            sessions_main()
+            
+        elif cmd == 'costs':
+            from claude_statusline.cost_analyzer import main as costs_main
+            costs_main()
+            
+        elif cmd == 'daily':
+            from claude_statusline.daily_report import main as daily_main
+            daily_main()
+            
+        elif cmd == 'heatmap':
+            from claude_statusline.activity_heatmap import main as heatmap_main
+            heatmap_main()
+            
+        elif cmd == 'summary':
+            from claude_statusline.summary_report import main as summary_main
+            summary_main()
+            
+        elif cmd == 'models':
+            from claude_statusline.model_usage import main as models_main
+            models_main()
+            
+        elif cmd == 'analytics':
+            from claude_statusline.analytics_cli import AnalyticsCLI
+            analytics = AnalyticsCLI()
+            analytics.run()
+            
+        elif cmd == 'budget':
+            from claude_statusline.budget_manager import main as budget_main
+            budget_main()
+            
+        elif cmd == 'update-prices':
+            from claude_statusline.update_prices import main as prices_main
+            prices_main()
+            
+        elif cmd == 'verify':
+            from claude_statusline.verify_costs import main as verify_main
+            verify_main()
+            
+        elif cmd == 'rotate':
+            from claude_statusline.statusline_rotator import main as rotate_main
+            rotate_main()
+            
         else:
-            print(f"Error: Module for '{cmd}' doesn't have a main() function")
+            print(f"Unknown command: {cmd}")
+            print("Run 'claude-statusline --help' for available commands")
             sys.exit(1)
             
     except KeyboardInterrupt:
-        print("\nOperation cancelled by user")
-        sys.exit(130)
-    except Exception as e:
-        print(f"Error executing '{cmd}': {e}")
+        print("\nOperation cancelled")
+        sys.exit(0)
+    except ImportError as e:
+        print(f"Module not found: {e}")
         sys.exit(1)
-    finally:
-        # Restore original argv if it was set
-        if 'original_argv' in locals():
-            sys.argv = original_argv
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
