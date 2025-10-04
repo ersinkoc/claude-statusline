@@ -5,6 +5,14 @@ All notable changes to Claude Statusline will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.6] - 2025-10-04
+
+### 🐛 CLI Version Display Fix (HOTFIX)
+- **Fixed Hard-coded Version** - CLI --version command now reads from __version__ variable
+- **Dynamic Version Display** - Version output automatically synchronized with package version
+- **Import Integration** - CLI now imports version from claude_statusline.__init__
+- **Immediate Fix** - Users will now see correct version when running --version
+
 ## [1.9.5] - 2025-10-04
 
 ### 🐛 Version Synchronization Fix

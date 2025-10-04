@@ -5,7 +5,7 @@ Real-time session tracking and analytics for Claude Code with 100+ powerline the
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-1.9.5-green.svg)
+![Version](https://img.shields.io/badge/version-1.9.6-green.svg)
 
 ## Features
 
@@ -196,7 +196,12 @@ MIT License - see LICENSE file for details.
 
 ## Changelog
 
-### v1.9.5 (Latest) - Version Synchronization Fix
+### v1.9.6 (Latest) - CLI Version Display Fix (HOTFIX)
+- **FIXED**: CLI --version command now shows correct version instead of hard-coded v1.9.0
+- **FIXED**: Version output now dynamically reads from __version__ variable
+- **IMPROVED**: Automatic synchronization between CLI version and package version
+
+### v1.9.5 - Version Synchronization Fix
 - **FIXED**: Version display inconsistency between CLI output and package version
 - **FIXED**: Synchronized version numbers across all package files
 - **IMPROVED**: Package consistency for clean PyPI publishing

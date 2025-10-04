@@ -78,7 +78,8 @@ def main():
         sys.exit(0)
     
     if cmd in ['-v', '--version', 'version']:
-        print("claude-statusline v1.9.0")
+        from claude_statusline import __version__
+        print(f"claude-statusline v{__version__}")
         sys.exit(0)
     
     # Handle commands
