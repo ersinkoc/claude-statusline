@@ -143,15 +143,9 @@ class DailyReportGenerator:
                 print(f"Session #{i:<8} {start:<12} {end:<12} {session['messages']:>8,} {self.format_currency(session['cost']):>12}")
     
     def _get_model_display_name(self, model: str) -> str:
-        """Get display name for model"""
-        if 'opus' in model.lower():
-            return '🧠 Opus'
-        elif 'sonnet' in model.lower():
-            return '🎭 Sonnet'
-        elif 'haiku' in model.lower():
-            return '⚡ Haiku'
-        else:
-            return model[:20]
+        """Get display name for model using centralized utilities"""
+        from .model_utils import get_model_display_name
+        return get_model_display_name(model)
     
     def _calculate_work_sessions(self, date_str: str) -> List[Dict]:
         """Calculate 5-hour work sessions for a day"""

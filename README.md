@@ -5,7 +5,7 @@ Real-time session tracking and analytics for Claude Code with 100+ powerline the
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-1.9.6-green.svg)
+![Version](https://img.shields.io/badge/version-1.9.8-green.svg)
 
 ## Features
 
@@ -196,7 +196,20 @@ MIT License - see LICENSE file for details.
 
 ## Changelog
 
-### v1.9.6 (Latest) - CLI Version Display Fix (HOTFIX)
+### v1.9.8 (Latest) - Rebuild Function Bug Fix (HOTFIX)
+- **FIXED**: Database rebuild command now correctly returns success/failure status
+- **FIXED**: CLI shows "[OK] Database rebuild completed" on successful rebuild
+- **FIXED**: Missing return value in `rebuild_database()` method resolved
+
+### v1.9.7 - Architecture Improvement - Centralized Model Management
+- **NEW**: Centralized `model_utils.py` with unified model display functions
+- **NEW**: Dynamic model names loaded from prices.json with tier-based emojis (🧠🎭⚡🔮)
+- **IMPROVED**: Consistent model display across all analytics and statusline modules
+- **IMPROVED**: Smart model classification (flagship, balanced, fast, special)
+- **TECHNICAL**: Eliminated duplicate code across 8+ files using DRY principles
+- **TECHNICAL**: Enhanced extensibility for adding new models without multiple updates
+
+### v1.9.6 - CLI Version Display Fix (HOTFIX)
 - **FIXED**: CLI --version command now shows correct version instead of hard-coded v1.9.0
 - **FIXED**: Version output now dynamically reads from __version__ variable
 - **IMPROVED**: Automatic synchronization between CLI version and package version

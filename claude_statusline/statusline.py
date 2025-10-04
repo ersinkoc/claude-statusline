@@ -1053,22 +1053,9 @@ class StatuslineDisplay:
         return 'unknown'
     
     def _get_model_display_name(self, model: str) -> str:
-        """Get display name for model from prices.json"""
-        # Try to get name from prices.json
-        try:
-            prices_file = Path(__file__).parent / 'prices.json'
-            if prices_file.exists():
-                import json
-                with open(prices_file, 'r') as f:
-                    prices = json.load(f)
-                    models = prices.get('models', {})
-                    if model in models:
-                        return models[model].get('name', model)
-        except:
-            pass
-        
-        # Fallback to simple formatting
-        return model.replace('claude-', '').replace('-', ' ').title()
+        """Get display name for model using centralized utilities"""
+        from .model_utils import get_model_display_name
+        return get_model_display_name(model)
     
     def _format_time_info(self, session_data: Dict[str, Any]) -> str:
         """Format time information - shows end time or remaining time"""

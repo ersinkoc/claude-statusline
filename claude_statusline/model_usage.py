@@ -15,6 +15,7 @@ from collections import defaultdict
 
 from .data_directory_utils import resolve_data_directory
 from .safe_file_operations import safe_json_read
+from .model_utils import get_model_display_name
 
 
 class ModelUsageAnalyzer:
@@ -244,29 +245,8 @@ class ModelUsageAnalyzer:
                 print(f"🏆 Most used model: {self._get_model_display_name(most_used[0])} ({most_used[1]} days)")
     
     def _get_model_display_name(self, model: str) -> str:
-        """Get display name for model"""
-        if 'opus-4-1' in model.lower():
-            return '🧠 Opus 4.1'
-        elif 'opus-4' in model.lower():
-            return '🧠 Opus 4'
-        elif 'opus' in model.lower():
-            return '🧠 Opus 3'
-        elif 'sonnet-4' in model.lower():
-            return '🎭 Sonnet 4'
-        elif 'sonnet-3-7' in model.lower():
-            return '🎭 Sonnet 3.7'
-        elif 'sonnet-3-5' in model.lower():
-            return '🎭 Sonnet 3.5'
-        elif 'sonnet' in model.lower():
-            return '🎭 Sonnet'
-        elif 'haiku-4' in model.lower():
-            return '⚡ Haiku 4'
-        elif 'haiku-3-5' in model.lower():
-            return '⚡ Haiku 3.5'
-        elif 'haiku' in model.lower():
-            return '⚡ Haiku'
-        else:
-            return model[:20]
+        """Get display name for model using centralized utilities"""
+        return get_model_display_name(model, self.prices)
 
 
 def main():

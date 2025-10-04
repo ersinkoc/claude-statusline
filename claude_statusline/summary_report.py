@@ -346,15 +346,9 @@ class SummaryReportGenerator:
         print()
     
     def _get_model_display_name(self, model: str) -> str:
-        """Get display name for model"""
-        if 'opus' in model.lower():
-            return '🧠 Opus'
-        elif 'sonnet' in model.lower():
-            return '🎭 Sonnet'
-        elif 'haiku' in model.lower():
-            return '⚡ Haiku'
-        else:
-            return model[:20]
+        """Get display name for model using centralized utilities"""
+        from .model_utils import get_model_display_name
+        return get_model_display_name(model)
 
 
 def main():

@@ -402,6 +402,8 @@ class DatabaseRebuilder:
         print(f"⏰ Active hours: {len(active_hours)}")
         print(f"💼 Work sessions created: {sum(len(sessions) for sessions in work_sessions.values())}")
         print(f"📁 Files tracked: {len(file_tracking)}")
+
+        return True
     
     def _calculate_cost(self, model: str, usage: Dict) -> float:
         """Calculate cost for given model and usage"""

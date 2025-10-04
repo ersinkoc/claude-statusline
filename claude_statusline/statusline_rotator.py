@@ -283,11 +283,9 @@ class StatuslineRotator:
             return "🏆 Productivity insights will appear as you work"
     
     def _get_model_display_name(self, model: str) -> str:
-        """Get display name for model"""
-        models = self.prices.get('models', {})
-        if model in models:
-            return models[model].get('name', model)
-        return model.replace('claude-', '').replace('-', ' ').title()
+        """Get display name for model using centralized utilities"""
+        from .model_utils import get_model_display_name
+        return get_model_display_name(model)
     
     def get_rotated_content(self, session_data: Optional[Dict[str, Any]] = None) -> str:
         """Get content based on rotation - only 2 modes now"""

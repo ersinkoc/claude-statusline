@@ -317,14 +317,10 @@ class UnifiedPowerlineSystem:
         try:
             if widget_type == 'model_short':
                 model = self.session_data.get('model', '')
-                if 'opus-4' in model:
-                    return 'Opus-4'
-                elif 'sonnet-4' in model:
-                    return 'Sonnet-4'
-                elif 'sonnet' in model:
-                    return 'Sonnet'
-                else:
-                    return 'Claude'
+                from .model_utils import get_model_display_name
+                display_name = get_model_display_name(model)
+                # Remove emoji for short display
+                return display_name.split(' ', 1)[-1] if ' ' in display_name else display_name
             
             elif widget_type == 'session_elapsed':
                 try:

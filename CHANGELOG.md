@@ -5,6 +5,46 @@ All notable changes to Claude Statusline will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.8] - 2025-10-04
+
+### 🐛 Rebuild Function Bug Fix (HOTFIX)
+- **Fixed Missing Return Value** - `rebuild_database()` method now returns `True` on success
+- **Database Rebuild Success** - CLI now correctly shows "[OK] Database rebuild completed" message
+- **Error Reporting** - Failed rebuild attempts properly show "[X] Database rebuild failed" message
+- **CLI Integration Fix** - Rebuild command status feedback now working correctly
+
+## [1.9.7] - 2025-10-04
+
+### 🏗️ Architecture Improvement - Centralized Model Management
+
+#### New Model Utilities System
+- **Centralized Model Utils** - Created `model_utils.py` with unified model display functions
+- **Prices.json Integration** - Model names and tiers now dynamically loaded from pricing data
+- **Consistent Display Names** - All modules now use the same model naming logic
+- **Smart Emoji Assignment** - Models get appropriate emojis based on tier and type (🧠🎭⚡🔮)
+
+#### Model Display Standardization
+- **Exact Match Priority** - prices.json data takes precedence over pattern matching
+- **Tier-based Classification** - flagship (🧠), balanced (🎭), fast (⚡), special (🔮 for GLM)
+- **Fallback Compatibility** - Backward compatible pattern matching for unknown models
+- **Cross-module Consistency** - All analytics, statusline, and reports show same model names
+
+#### Technical Improvements
+- **DRY Principle** - Eliminated duplicate model display functions across 8+ files
+- **Enhanced Utility Functions** - Added `get_model_tier()` and `is_claude_model()` helpers
+- **Improved Error Handling** - Graceful fallback when prices.json unavailable
+- **Better Extensibility** - Easy to add new models without updating multiple files
+
+#### Updated Modules
+- **model_usage.py** - Uses centralized model display with prices.json integration
+- **statusline.py** - Dynamic model names from centralized utilities
+- **session_analyzer.py** - Consistent model naming across all reports
+- **cost_analyzer.py** - Unified model display in cost breakdowns
+- **daily_report.py** - Standardized model names in daily summaries
+- **statusline_rotator.py** - Consistent model names in rotation display
+- **summary_report.py** - Unified model naming in summary analytics
+- **unified_powerline_system.py** - Smart model short names with emoji removal
+
 ## [1.9.6] - 2025-10-04
 
 ### 🐛 CLI Version Display Fix (HOTFIX)
