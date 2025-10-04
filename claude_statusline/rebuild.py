@@ -124,9 +124,9 @@ class DatabaseRebuilder:
                             
                             # Get model
                             model = msg.get('model', 'unknown')
-                            
-                            # Skip synthetic models (test/debug messages)
-                            if 'synthetic' in model.lower():
+
+                            # Only process Claude models
+                            if not model.lower().startswith('claude-'):
                                 continue
                             
                             # Get usage
@@ -156,15 +156,16 @@ class DatabaseRebuilder:
                             hour_data['total_tokens'] += (input_tokens + output_tokens + cache_creation + cache_read)
                             hour_data['cost'] += cost
                             
-                            # Update model statistics
-                            model_data = hour_data['models'][model]
-                            model_data['messages'] += 1
-                            model_data['input_tokens'] += input_tokens
-                            model_data['output_tokens'] += output_tokens
-                            model_data['cache_creation_input_tokens'] += cache_creation
-                            model_data['cache_read_input_tokens'] += cache_read
-                            model_data['total_tokens'] += (input_tokens + output_tokens + cache_creation + cache_read)
-                            model_data['cost'] += cost
+                            # Update model statistics (only for Claude models)
+                            if model.startswith('claude-'):
+                                model_data = hour_data['models'][model]
+                                model_data['messages'] += 1
+                                model_data['input_tokens'] += input_tokens
+                                model_data['output_tokens'] += output_tokens
+                                model_data['cache_creation_input_tokens'] += cache_creation
+                                model_data['cache_read_input_tokens'] += cache_read
+                                model_data['total_tokens'] += (input_tokens + output_tokens + cache_creation + cache_read)
+                                model_data['cost'] += cost
                             
                             total_messages += 1
                             file_messages += 1
@@ -231,9 +232,9 @@ class DatabaseRebuilder:
                 # Accumulate cost from hourly data (CRITICAL FIX)
                 current_session['cost'] = current_session.get('cost', 0.0) + hour_data['cost']
                 
-                # Track models
+                # Track only Claude models
                 for model in hour_data['models']:
-                    if model not in current_session['models']:
+                    if model.startswith('claude-') and model not in current_session['models']:
                         current_session['models'].append(model)
                 
                 # Check if session should end
@@ -263,7 +264,7 @@ class DatabaseRebuilder:
                         'message_count': hour_data['messages'],
                         'tokens': hour_data['total_tokens'],
                         'cost': hour_data['cost'],  # Include cost from hourly data
-                        'models': list(hour_data['models'].keys()),
+                        'models': [m for m in hour_data['models'].keys() if m.startswith('claude-')],
                         'primary_model': 'unknown'
                     }
             
@@ -287,11 +288,11 @@ class DatabaseRebuilder:
         for date, hours in hourly_statistics.items():
             hourly_statistics_final[date] = {}
             for hour, hour_data in hours.items():
-                # Determine primary model (most used model in this hour)
+                # Determine primary model (most used Claude model in this hour)
                 primary_model = None
                 max_messages = 0
                 for model_name, model_data in hour_data['models'].items():
-                    if model_data['messages'] > max_messages:
+                    if model_name.startswith('claude-') and model_data['messages'] > max_messages:
                         max_messages = model_data['messages']
                         primary_model = model_name
                 

@@ -37,6 +37,7 @@ Core Commands:
 Analytics:
 ----------
   sessions        Analyze session details
+  model-sessions  Show session-by-session statistics per model
   costs           Analyze costs by model and time
   daily           Generate daily usage report
   heatmap         Show activity heatmap
@@ -164,7 +165,7 @@ def main():
         elif cmd == 'sessions':
             from claude_statusline.session_analyzer import SessionAnalyzer
             analyzer = SessionAnalyzer()
-            
+
             # Parse subcommands
             if len(sys.argv) > 2 and sys.argv[2] == '--patterns':
                 analyzer.analyze_usage_patterns()
@@ -173,6 +174,16 @@ def main():
                 analyzer.get_top_sessions(n)
             else:
                 analyzer.analyze_all_sessions()
+
+        elif cmd == 'model-sessions':
+            from claude_statusline.model_session_stats import main as model_sessions_main
+            # Replace sys.argv with just the subcommand part
+            original_argv = sys.argv
+            sys.argv = ['model-sessions'] + sys.argv[2:]
+            try:
+                model_sessions_main()
+            finally:
+                sys.argv = original_argv
             
         elif cmd == 'costs':
             from claude_statusline.cost_analyzer import CostAnalyzer

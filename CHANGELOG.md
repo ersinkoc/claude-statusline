@@ -5,6 +5,60 @@ All notable changes to Claude Statusline will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.3] - 2025-10-04
+
+### 📊 Model Session Analytics (NEW!)
+
+#### Model-Specific Session Statistics
+- **Session-by-Session Breakdown** - Detailed statistics for each model per session
+- **Comprehensive Token Analysis** - Input, output, cache read, and total tokens per session
+- **Cost Tracking** - Individual session costs and totals per model
+- **Session Duration Analysis** - Track session length and active hours
+- **Multi-Model Support** - Statistics available for all models: Claude, GLM, etc.
+
+#### New CLI Command
+- **`model-sessions` Command** - Complete model-specific session analytics
+- **Filtering Options** - Filter by specific model or limit number of sessions
+- **Model Listing** - List all available models in the database
+- **Summary Statistics** - Average tokens, costs, and most active hours per model
+
+#### Technical Features
+- **Hourly Data Extraction** - Intelligent session statistics from hourly data
+- **Smart Session Mapping** - Maps work sessions to hourly model usage
+- **Performance Optimized** - Efficient data processing for large session histories
+- **Console Safe Output** - Cross-platform Unicode and emoji support
+
+### Usage Examples
+```bash
+# List all available models
+claude-statusline model-sessions --list-models
+
+# Show all sessions for specific model
+claude-statusline model-sessions --model claude-sonnet-4-5-20250929
+
+# Limit results to recent sessions
+claude-statusline model-sessions --model glm-4.5 --limit 10
+
+# Show all models and all sessions
+claude-statusline model-sessions
+```
+
+## [1.9.2] - 2025-08-22
+
+### 🔧 Model Filtering Enhancement
+
+#### Claude-Only Processing
+- **Exclusive Claude Model Support** - Now only processes models starting with "claude-"
+- **Non-Claude Model Exclusion** - Automatically filters out GLM, synthetic, and other non-Claude models
+- **Comprehensive Filtering** - Applied filtering at all levels: message processing, model statistics, session tracking, and work sessions
+- **Clean Data Integrity** - Ensures database only contains Claude model usage data
+
+### Technical Improvements
+- **Enhanced Rebuild Process** - Complete model filtering in rebuild.py
+- **Model Statistics Accuracy** - Only Claude models contribute to statistics and cost calculations
+- **Session Management** - Work sessions created with only Claude model data
+- **Primary Model Selection** - Automatically selects most used Claude model as primary
+
 ## [1.9.1] - 2025-08-22
 
 ### 🎨 Visual Enhancements

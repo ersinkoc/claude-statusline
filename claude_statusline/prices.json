@@ -1,10 +1,20 @@
 {
-  "last_updated": "2025-08-13",
+  "last_updated": "2025-10-04",
   "source": "https://www.anthropic.com/pricing",
   "currency": "USD",
   "per_million_tokens": true,
   "update_frequency": "weekly",
   "models": {
+    "claude-sonnet-4-5-20250929": {
+      "input": 3.0,
+      "output": 15.0,
+      "cache_write_5m": 3.75,
+      "cache_write_1h": 6.0,
+      "cache_read": 0.3,
+      "name": "Sonnet 4.5",
+      "tier": "balanced",
+      "active": true
+    },
     "claude-opus-4-1-20250805": {
       "input": 15.0,
       "output": 75.0,
@@ -114,6 +124,36 @@
       "name": "Haiku 3",
       "tier": "fast",
       "active": false
+    },
+    "glm-4.6": {
+      "input": 0.0,
+      "output": 0.0,
+      "cache_write_5m": 0.0,
+      "cache_write_1h": 0.0,
+      "cache_read": 0.0,
+      "name": "GLM 4.6",
+      "tier": "flagship",
+      "active": true
+    },
+    "glm-4.5": {
+      "input": 0.0,
+      "output": 0.0,
+      "cache_write_5m": 0.0,
+      "cache_write_1h": 0.0,
+      "cache_read": 0.0,
+      "name": "GLM 4.5",
+      "tier": "flagship",
+      "active": true
+    },
+    "glm-4.5-air": {
+      "input": 0.0,
+      "output": 0.0,
+      "cache_write_5m": 0.0,
+      "cache_write_1h": 0.0,
+      "cache_read": 0.0,
+      "name": "GLM 4.5 Air",
+      "tier": "fast",
+      "active": true
     }
   },
   "fallback_pricing": {

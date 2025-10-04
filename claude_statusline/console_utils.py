@@ -236,3 +236,23 @@ def print_colored(text: str, color: str = None, bold: bool = False):
     except Exception:
         # Last resort - plain text
         print(text)
+
+
+def print_info(text: str):
+    """Print info message"""
+    print_colored(f"ℹ️  {text}", 'cyan')
+
+
+def print_success(text: str):
+    """Print success message"""
+    print_colored(f"✅ {text}", 'green')
+
+
+def print_warning(text: str):
+    """Print warning message"""
+    print_colored(f"⚠️  {text}", 'yellow')
+
+
+def print_error(text: str):
+    """Print error message"""
+    print_colored(f"❌ {text}", 'red')
