@@ -5,7 +5,7 @@ Real-time session tracking and analytics for Claude Code with 100+ powerline the
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-1.9.1-green.svg)
+![Version](https://img.shields.io/badge/version-1.9.4-green.svg)
 
 ## Features
 
@@ -75,6 +75,7 @@ claude-statusline trends         # Usage trends and patterns
 claude-statusline health         # System health monitoring
 claude-statusline budget         # Budget management
 claude-statusline sessions       # Session analysis
+claude-statusline model-sessions # Model-specific session statistics
 claude-statusline costs          # Cost analysis
 claude-statusline daily          # Daily reports
 claude-statusline heatmap        # Activity heatmaps
@@ -107,6 +108,13 @@ b   = Theme builder
 ```
 
 ## Analytics Features
+
+### Model Session Analytics (v1.9.3 - NEW!)
+- **Session-by-Session Breakdown** - Detailed statistics for each model per session
+- **Token-Level Analysis** - Input, output, cache creation, and cache read tokens
+- **Accurate Cost Calculation** - Precise cost tracking based on official model pricing
+- **Model Filtering** - Focus on specific Claude models (Sonnet, Opus, Haiku)
+- **Performance Metrics** - Session duration, message count, and most active hours
 
 ### Trend Analysis
 - Usage patterns over time
@@ -188,7 +196,32 @@ MIT License - see LICENSE file for details.
 
 ## Changelog
 
-### v1.9.0 (Latest)
+### v1.9.4 (Latest) - Model Session Analytics (Fixed)
+- **NEW**: `model-sessions` command for detailed session-by-session statistics
+- **NEW**: Model-specific cost calculation with accurate pricing data
+- **NEW**: Token-level breakdown (input, output, cache creation, cache read)
+- **NEW**: Performance metrics per session (duration, messages, active hours)
+- **NEW**: Model filtering - focus only on Claude models (excludes GLM)
+- **IMPROVED**: Accurate cost calculation using official model pricing
+- **FIXED**: Removed non-Claude models from analytics for cleaner data
+- **FIXED**: Correct cost calculation using official model pricing database
+- **FIXED**: Proper model filtering showing only Claude models (Sonnet, Opus, Haiku)
+
+### v1.9.3 - Model Session Analytics
+- **NEW**: Initial model session statistics implementation
+- **NEW**: Session-by-session breakdown for each model
+
+### v1.9.2 - Model Filtering Enhancement
+- **IMPROVED**: Exclusive Claude model support in data processing
+- **IMPROVED**: Comprehensive filtering at all levels of data processing
+- **IMPROVED**: Clean data integrity with only Claude model usage
+
+### v1.9.1 - Visual Enhancements
+- **NEW**: Two-line powerline display with progress bar
+- **NEW**: Session progress tracking with visual indicators
+- **IMPROVED**: Enhanced visual presentation
+
+### v1.9.0 - Powerline Theme System
 - **NEW**: 100 professional powerline themes with smart widget grouping
 - **NEW**: Interactive theme browser with live preview and search
 - **NEW**: Custom theme builder for creating personalized designs

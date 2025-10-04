@@ -5,6 +5,27 @@ All notable changes to Claude Statusline will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.4] - 2025-10-04
+
+### 📊 Model Session Analytics (FIXED)
+
+#### Cost Calculation Corrections
+- **Accurate Pricing Database** - Fixed cost calculation using official model pricing
+- **Claude-Only Filtering** - Properly filters to show only Claude models (Sonnet, Opus, Haiku)
+- **Database Cost Usage** - Uses pre-calculated costs from session database for accuracy
+- **Model Exclusion** - GLM and other non-Claude models completely excluded from analytics
+
+#### Fixed Issues
+- **Cost Accuracy** - Corrected token cost calculations with proper pricing tiers
+- **Model Filtering** - Ensures only Claude models appear in statistics
+- **Data Integrity** - Clean session data without mixed model contamination
+- **Pricing Consistency** - All models use correct per-million token pricing
+
+### Technical Improvements
+- **Price Data Integration** - Proper integration with prices.json for accurate calculations
+- **Model Validation** - Robust model name filtering and validation
+- **Cost Verification** - Cross-referenced with database-stored cost calculations
+
 ## [1.9.3] - 2025-10-04
 
 ### 📊 Model Session Analytics (NEW!)

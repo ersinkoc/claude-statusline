@@ -201,15 +201,6 @@ def extract_model_session_stats(sessions_data: Dict[str, Any], data_dir: Path = 
                 if not model_name.startswith('claude-'):
                     continue
 
-                # Calculate cost accurately using pricing data
-                tokens = {
-                    'input_tokens': model_stats['input_tokens'],
-                    'output_tokens': model_stats['output_tokens'],
-                    'cache_creation_input_tokens': model_stats['cache_creation_input_tokens'],
-                    'cache_read_input_tokens': model_stats['cache_read_input_tokens']
-                }
-                calculated_cost = calculate_cost(model_name, tokens, prices_data)
-
                 session_entry = {
                     'date': date_str,
                     'session_index': session_idx + 1,
@@ -222,7 +213,7 @@ def extract_model_session_stats(sessions_data: Dict[str, Any], data_dir: Path = 
                     'cache_creation_input_tokens': model_stats['cache_creation_input_tokens'],
                     'cache_read_input_tokens': model_stats['cache_read_input_tokens'],
                     'total_tokens': model_stats['total_tokens'],
-                    'cost': calculated_cost,  # Use calculated cost instead of database cost
+                    'cost': model_stats['cost'],  # Use database cost (already correctly calculated)
                     'active_hours': model_stats['hours']
                 }
                 model_sessions[model_name].append(session_entry)
