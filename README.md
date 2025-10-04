@@ -5,7 +5,7 @@ Real-time session tracking and analytics for Claude Code with 100+ powerline the
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-1.9.4-green.svg)
+![Version](https://img.shields.io/badge/version-1.9.5-green.svg)
 
 ## Features
 
@@ -196,7 +196,13 @@ MIT License - see LICENSE file for details.
 
 ## Changelog
 
-### v1.9.4 (Latest) - Model Session Analytics (Fixed)
+### v1.9.5 (Latest) - Version Synchronization Fix
+- **FIXED**: Version display inconsistency between CLI output and package version
+- **FIXED**: Synchronized version numbers across all package files
+- **IMPROVED**: Package consistency for clean PyPI publishing
+- **TECHNICAL**: Version coordination and metadata accuracy
+
+### v1.9.4 - Model Session Analytics (Fixed)
 - **NEW**: `model-sessions` command for detailed session-by-session statistics
 - **NEW**: Model-specific cost calculation with accurate pricing data
 - **NEW**: Token-level breakdown (input, output, cache creation, cache read)

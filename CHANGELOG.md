@@ -5,6 +5,19 @@ All notable changes to Claude Statusline will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.5] - 2025-10-04
+
+### 🐛 Version Synchronization Fix
+- **Fixed Version Display** - Corrected version output to match actual package version
+- **Updated Package Metadata** - Synchronized version numbers across all files
+- **Package Consistency** - Ensured version consistency in setup.py, __init__.py, and CLI output
+- **Release Preparation** - Clean version bump for PyPI publishing
+
+### Technical Improvements
+- **Version Coordination** - All version references now properly synchronized
+- **Build Readiness** - Package prepared for clean PyPI publishing
+- **Metadata Accuracy** - Correct version information in all package metadata
+
 ## [1.9.4] - 2025-10-04
 
 ### 📊 Model Session Analytics (FIXED)
