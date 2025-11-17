@@ -219,8 +219,8 @@ class InstanceManager:
             if temp_path.exists():
                 try:
                     os.remove(temp_path)
-                except:
-                    pass
+                except Exception as e:
+                    self.logger.debug(f"Could not remove temp file: {e}")
             return False
     
     def _cleanup_stale_lock(self):
@@ -233,20 +233,14 @@ class InstanceManager:
                         # First try normal removal
                         os.remove(self.lock_file_path)
                     except PermissionError:
-                        # Try to forcefully unlock and remove
+                        # Last resort: rename the file to a temp name
+                        # Removed subprocess approach due to security concerns
+                        temp_name = self.lock_file_path.with_suffix('.old')
                         try:
-                            import subprocess
-                            # Use Windows handle.exe to force close file handles (if available)
-                            subprocess.run(['cmd', '/c', f'del /f /q "{self.lock_file_path}"'], 
-                                         capture_output=True, timeout=2)
-                        except:
-                            # Last resort: rename the file to a temp name
-                            temp_name = self.lock_file_path.with_suffix('.old')
-                            try:
-                                os.rename(self.lock_file_path, temp_name)
-                                os.remove(temp_name)
-                            except:
-                                pass
+                            os.rename(self.lock_file_path, temp_name)
+                            os.remove(temp_name)
+                        except Exception as e:
+                            self.logger.warning(f"Could not cleanup lock file: {e}")
                 else:
                     os.remove(self.lock_file_path)
                 self.logger.debug(f"Cleaned up stale lock file: {self.lock_file_path}")
@@ -266,7 +260,7 @@ class InstanceManager:
                         fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_UN)
                     else:
                         msvcrt.locking(self.lock_file.fileno(), msvcrt.LK_UNLCK, 1)
-                except:
+                except (OSError, IOError, ValueError):
                     pass  # Lock might already be released
                 
                 self.lock_file.close()
@@ -281,7 +275,7 @@ class InstanceManager:
                     if lock_data.startswith(f"{self.current_pid}:"):
                         os.remove(self.lock_file_path)
                         self.logger.debug(f"Cleaned up lock file for {self.component_name}")
-                except:
+                except (IOError, OSError, Exception):
                     pass  # Best effort cleanup
                     
         except Exception as e:
@@ -348,19 +342,15 @@ class InstanceManager:
                     try:
                         os.remove(self.lock_file_path)
                     except PermissionError:
-                        # Try Windows-specific force removal
+                        # Try renaming as alternative approach
+                        # Removed subprocess approach due to security concerns
                         try:
-                            import subprocess
-                            result = subprocess.run(['cmd', '/c', f'del /f /q "{self.lock_file_path}"'], 
-                                                  capture_output=True, timeout=2)
-                            if result.returncode != 0:
-                                # Try renaming as last resort
-                                temp_name = self.lock_file_path.with_suffix('.old')
-                                os.rename(self.lock_file_path, temp_name)
-                                try:
-                                    os.remove(temp_name)
-                                except:
-                                    pass  # At least we renamed it
+                            temp_name = self.lock_file_path.with_suffix('.old')
+                            os.rename(self.lock_file_path, temp_name)
+                            try:
+                                os.remove(temp_name)
+                            except Exception:
+                                pass  # At least we renamed it
                         except Exception as e:
                             self.logger.error(f"Windows force removal failed: {e}")
                             return False
