@@ -180,7 +180,7 @@ def safe_unicode_print(text: str) -> str:
         try:
             # Set console to UTF-8 mode
             import subprocess
-            subprocess.run(['chcp', '65001'], capture_output=True, shell=True)
+            subprocess.run(['chcp', '65001'], capture_output=True, shell=False)
             
             # Try to write directly to stdout buffer as UTF-8
             if hasattr(sys.stdout, 'buffer'):
