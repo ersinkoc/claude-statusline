@@ -141,10 +141,16 @@ class CostAnalyzer:
                     cache_read_cost = (tokens['cache_read'] / 1_000_000) * model_prices.get('cache_read', 0)
                     
                     print(f"  Cost Breakdown:")
-                    print(f"    Input    : ${input_cost:,.2f} ({input_cost/cost*100:.1f}%)")
-                    print(f"    Output   : ${output_cost:,.2f} ({output_cost/cost*100:.1f}%)")
-                    print(f"    Cache    : ${cache_cost:,.2f} ({cache_cost/cost*100:.1f}%)")
-                    print(f"    Cache Read: ${cache_read_cost:,.2f} ({cache_read_cost/cost*100:.1f}%)")
+                    if cost > 0:
+                        print(f"    Input    : ${input_cost:,.2f} ({input_cost/cost*100:.1f}%)")
+                        print(f"    Output   : ${output_cost:,.2f} ({output_cost/cost*100:.1f}%)")
+                        print(f"    Cache    : ${cache_cost:,.2f} ({cache_cost/cost*100:.1f}%)")
+                        print(f"    Cache Read: ${cache_read_cost:,.2f} ({cache_read_cost/cost*100:.1f}%)")
+                    else:
+                        print(f"    Input    : ${input_cost:,.2f}")
+                        print(f"    Output   : ${output_cost:,.2f}")
+                        print(f"    Cache    : ${cache_cost:,.2f}")
+                        print(f"    Cache Read: ${cache_read_cost:,.2f}")
     
     def _print_expensive_days(self, daily_costs):
         """Print most expensive days"""
