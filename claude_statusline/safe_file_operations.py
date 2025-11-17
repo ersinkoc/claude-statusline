@@ -16,21 +16,29 @@ def safe_json_read(file_path: Path, max_retries: int = 3, retry_delay: float = 0
     """
     Safely read JSON file with retries
     """
+    last_exception = None
     for attempt in range(max_retries):
         try:
             with open(file_path, 'r') as f:
                 return json.load(f)
         except (IOError, OSError) as e:
+            last_exception = e
             if attempt < max_retries - 1:
                 time.sleep(retry_delay)
                 continue
             raise
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
             # File might be corrupted or being written
+            last_exception = e
             if attempt < max_retries - 1:
                 time.sleep(retry_delay)
                 continue
             raise
+
+    # This should never be reached, but ensure we don't return None
+    if last_exception:
+        raise last_exception
+    raise RuntimeError(f"Failed to read {file_path} after {max_retries} retries")
     
 def safe_json_write(data: dict, file_path: Path, max_retries: int = 3, retry_delay: float = 0.1):
     """
@@ -75,10 +83,9 @@ def safe_json_write(data: dict, file_path: Path, max_retries: int = 3, retry_del
         try:
             if os.path.exists(temp_path):
                 os.remove(temp_path)
-        except:
-            pass
-    
-    return False
+        except Exception as e:
+            # Log but don't fail on cleanup errors
+            logger.debug(f"Failed to cleanup temp file {temp_path}: {e}")
 
 def safe_update_json(file_path: Path, update_func, max_retries: int = 5, retry_delay: float = 0.2):
     """

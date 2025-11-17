@@ -13,8 +13,8 @@ if os.name == 'nt' and hasattr(sys.stdout, 'reconfigure'):
     try:
         sys.stdout.reconfigure(encoding='utf-8')
         sys.stderr.reconfigure(encoding='utf-8')
-    except:
-        pass
+    except (AttributeError, ValueError, Exception):
+        pass  # Already configured or not supported
 
 def print_help():
     """Print help message"""
