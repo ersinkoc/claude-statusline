@@ -9,6 +9,7 @@ Claude Statusline is a Python package that provides real-time session tracking a
 ## Build and Development Commands
 
 ### Installation
+
 ```bash
 # Install in development mode
 pip install -e .
@@ -21,6 +22,7 @@ python -m build
 ```
 
 ### Testing
+
 ```bash
 # Run all tests
 pytest
@@ -39,8 +41,9 @@ python tests/test_current_detect.py
 ```
 
 ### Code Quality
+
 ```bash
-# Format code with black
+# Format code with black (line-length: 100)
 black claude_statusline/
 
 # Check code style with flake8
@@ -51,6 +54,7 @@ mypy claude_statusline/
 ```
 
 ### Package Distribution
+
 ```bash
 # Build distribution packages
 python -m build
@@ -65,6 +69,7 @@ twine upload dist/*
 ## Architecture Overview
 
 ### Core Data Flow
+
 1. **Claude Code** writes conversation logs to `~/.claude/projects/*/` as JSONL files
 2. **Daemon** (`daemon.py`) runs continuously, calling rebuild every 60 seconds
 3. **Rebuild** processes JSONL files, extracting tokens and grouping into 5-hour sessions
@@ -74,54 +79,70 @@ twine upload dist/*
 ### Key Components
 
 #### Entry Points
-- `statusline.py`: Main entry called by Claude Code for status display
-- `cli.py`: Unified CLI interface for all commands
-- `daemon.py`: Background processor managing data updates
+
+- `cli.py`: Unified CLI interface (`claude-statusline <command>`)
+- `statusline.py`: Status display (`claude-status`)
+- `daemon.py`: Background processor (`claude-daemon`)
+- `rebuild.py`: Database rebuilder (`claude-rebuild`)
+- `interactive_theme_manager.py`: Theme browser (`claude-theme`)
 
 #### Data Processing
+
 - `rebuild.py`: Core database builder processing JSONL files
 - Token extraction path: `message.content[0].usage.{input_tokens, output_tokens, cache_*_tokens}`
 - Sessions are 5-hour work blocks with automatic detection of active sessions
 
 #### Utilities
+
 - `instance_manager.py`: PID-based single instance enforcement using psutil
 - `data_directory_utils.py`: Consistent path resolution to `~/.claude/data-statusline/`
 - `safe_file_operations.py`: Atomic file operations with temp file writes
-- `formatter.py`: Status formatting with model name resolution and cost calculation
+- `model_utils.py`: Centralized model display names, tiers, and pricing lookups
 
 #### Analytics Tools
+
 - `session_analyzer.py`: Detailed session-by-session analysis
 - `cost_analyzer.py`: Cost breakdown by time period and model
 - `daily_report.py`: Daily usage summaries
 - `activity_heatmap.py`: Visual activity patterns
 - `model_usage.py`: Model-specific statistics
+- `model_session_stats.py`: Per-session model breakdown
+- `trend_analyzer.py`: Usage trends and patterns
+- `budget_manager.py`: Spending limits and tracking
+- `health_monitor.py`: System diagnostics
 
 ### Data Storage
+
 All data is stored in `~/.claude/data-statusline/`:
+
 - `smart_sessions_db.json`: Main session database
 - `daemon_status.json`: Daemon health status
 - `file_tracking.json`: JSONL file processing state
 - `.unified_daemon.lock`: PID lock file
 
 ### Configuration Files
+
 - `config.json`: Display templates, rotation settings, session duration
 - `prices.json`: Model pricing data (auto-updated from remote source)
 
 ## Key Design Patterns
 
 ### Session Management
+
 - Sessions are 5-hour blocks for typical work periods
 - New session starts if gap > 5 hours between messages
 - Active session detected when current time < session_end
 - All timestamps in UTC for consistency
 
 ### Error Handling
+
 - Graceful degradation: returns defaults if data unavailable
 - Atomic writes prevent partial file corruption
 - Stale lock detection and cleanup
 - Malformed JSON skipped with logging
 
 ### Performance Optimizations
+
 - Incremental JSONL processing (not fully loaded)
 - File position tracking prevents reprocessing
 - 60-second update interval balances freshness vs performance
@@ -130,32 +151,39 @@ All data is stored in `~/.claude/data-statusline/`:
 ## Common Development Tasks
 
 ### Adding New Analytics Command
+
 1. Create new module in `claude_statusline/`
-2. Add entry point in `cli.py` using click decorators
+2. Add entry point in `cli.py` using argparse handlers
 3. Read data from `smart_sessions_db.json`
 4. Use `console_utils.py` for formatted output
 
 ### Modifying Token Extraction
+
 Token paths are in `rebuild.py`:
-- Look for `_extract_tokens_from_message()` function
-- Tokens nested in: `message['content'][0]['usage']`
+
+- Look for `_calculate_cost()` and the main processing loop
+- Tokens nested in: `message['usage']`
 
 ### Adding New Display Template
-1. Edit `templates.py` to add template definition
-2. Update `formatter.py` if new formatting needed
-3. Add to template selector in `template_selector.py`
+
+1. Edit `unified_powerline_system.py` to add theme definition
+2. Register in `interactive_theme_manager.py` for browser access
 
 ### Debugging Session Detection
-- Check `check_current.py` for current session logic
-- Session boundaries in `rebuild.py` `_should_start_new_session()`
+
+- Session boundaries in `rebuild.py` session grouping logic
 - Live detection uses 5-hour window from session start
+- Check `current_session` field in `smart_sessions_db.json`
 
 ## External Dependencies
-- **psutil**: Process management and PID checking (only external dependency)
+
+- **psutil**: Process management and PID checking
+- **colorama**: Cross-platform colored terminal output
 - Python 3.8+ required
 - Access to `~/.claude/` directory with Claude Code data
 
 ## Testing Approach
+
 - Unit tests in `tests/` directory using pytest
 - Test files start with `test_`
 - Mock Claude Code data for testing

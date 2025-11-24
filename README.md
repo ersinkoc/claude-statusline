@@ -5,7 +5,7 @@ Real-time session tracking and analytics for Claude Code with 100+ powerline the
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-1.9.8-green.svg)
+![Version](https://img.shields.io/badge/version-1.9.9-green.svg)
 
 ## Features
 
@@ -196,7 +196,15 @@ MIT License - see LICENSE file for details.
 
 ## Changelog
 
-### v1.9.8 (Latest) - Rebuild Function Bug Fix (HOTFIX)
+### v1.9.9 (Latest) - Claude Opus 4.5 Model Support
+
+- **NEW**: Added support for `claude-opus-4-5-20251101` model
+- **NEW**: Opus 4.5 pricing: $5/M input, $25/M output tokens
+- **IMPROVED**: Updated model_utils.py with Opus 4.5 fallback pattern
+- **IMPROVED**: Updated prices.json with complete Opus 4.5 pricing data
+
+### v1.9.8 - Rebuild Function Bug Fix (HOTFIX)
+
 - **FIXED**: Database rebuild command now correctly returns success/failure status
 - **FIXED**: CLI shows "[OK] Database rebuild completed" on successful rebuild
 - **FIXED**: Missing return value in `rebuild_database()` method resolved

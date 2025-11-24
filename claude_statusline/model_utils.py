@@ -50,7 +50,9 @@ def get_model_display_name(model: str, prices_data: dict = None) -> str:
     model_lower = model.lower()
 
     # Check for specific patterns first (more specific first)
-    if 'opus-4-1' in model_lower:
+    if 'opus-4-5' in model_lower:
+        return '🧠 Opus 4.5'
+    elif 'opus-4-1' in model_lower:
         return '🧠 Opus 4.1'
     elif 'opus-4' in model_lower:
         return '🧠 Opus 4'
