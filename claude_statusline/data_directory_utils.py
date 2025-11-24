@@ -69,16 +69,37 @@ def _can_create_directory(path: Path) -> bool:
 def resolve_data_directory(data_dir: Optional[Path] = None) -> Path:
     """
     Resolve the data directory to use, with optional override.
-    
+
     Args:
         data_dir: Optional explicit data directory path
-        
+
     Returns:
         Path: The resolved data directory path
+
+    Raises:
+        ValueError: If provided path contains path traversal attempts
     """
     if data_dir:
+        # Validate path to prevent path traversal attacks
+        resolved_path = data_dir.resolve()
+
+        # Check for path traversal patterns
+        path_str = str(data_dir)
+        if '..' in path_str or path_str.startswith('/etc') or path_str.startswith('/sys'):
+            raise ValueError(f"Invalid data directory path: {data_dir}")
+
+        # Ensure resolved path is within allowed directories
+        allowed_bases = [Path.home(), Path.cwd()]
+        is_valid = any(
+            str(resolved_path).startswith(str(base.resolve()))
+            for base in allowed_bases
+        )
+
+        if not is_valid:
+            raise ValueError(f"Data directory must be within home or current directory: {data_dir}")
+
         # Explicit path provided, ensure it exists
         data_dir.mkdir(parents=True, exist_ok=True)
         return data_dir
-    
+
     return get_default_data_directory()

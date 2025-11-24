@@ -24,7 +24,7 @@ if os.name == 'nt' and hasattr(sys.stdout, 'reconfigure'):
     try:
         sys.stdout.reconfigure(encoding='utf-8')
         sys.stderr.reconfigure(encoding='utf-8')
-    except:
+    except Exception:
         pass
 
 try:
@@ -397,7 +397,7 @@ class StatuslineDisplay:
                                 line_count = sum(1 for line in f if line.strip())
                                 # Each exchange typically has 2 entries (user + assistant)
                                 current_message_count = max(current_message_count, line_count // 2)
-                    except:
+                    except Exception:
                         pass  # Fall back to stored count
                 
                 # Calculate session end time
@@ -412,7 +412,7 @@ class StatuslineDisplay:
                         # Convert to local time for display
                         local_end_time = end_time.astimezone()
                         session_end_time = local_end_time.strftime('%H:%M')
-                    except:
+                    except Exception:
                         pass
                 
                 # Use most recent model (last in models list) or Claude Code's model info
@@ -451,7 +451,7 @@ class StatuslineDisplay:
                         end_time = start_time + timedelta(hours=5)
                         local_end_time = end_time.astimezone()
                         session_end_time = local_end_time.strftime('%H:%M')
-                    except:
+                    except Exception:
                         pass
                 
                 # Use most recent model from database
@@ -605,7 +605,7 @@ class StatuslineDisplay:
                     end_time = start_time + timedelta(hours=5)
                     local_end_time = end_time.astimezone()
                     db_data['session_end_time'] = local_end_time.strftime('%H:%M')
-                except:
+                except Exception:
                     pass
             
             # Always calculate real remaining time (ignore database value)
@@ -846,7 +846,7 @@ class StatuslineDisplay:
         if isinstance(session_start, str):
             try:
                 session_start = datetime.datetime.fromisoformat(session_start.replace('Z', '+00:00'))
-            except:
+            except Exception:
                 session_start = datetime.datetime.now(datetime.timezone.utc)
         
         session_duration = datetime.datetime.now(datetime.timezone.utc) - session_start
@@ -880,11 +880,11 @@ class StatuslineDisplay:
         # Git branch (if available)
         git_branch = "main"  # Default
         try:
-            result = subprocess.run(['git', 'branch', '--show-current'], 
+            result = subprocess.run(['git', 'branch', '--show-current'],
                                   capture_output=True, text=True, timeout=1)
             if result.returncode == 0 and result.stdout.strip():
                 git_branch = result.stdout.strip()
-        except:
+        except Exception:
             git_branch = "main"
             
         # Session time remaining (5 hour sessions)
@@ -1120,7 +1120,7 @@ class StatuslineDisplay:
             cwd = Path.cwd().name
             if cwd:
                 info_parts.append(cwd)
-        except:
+        except Exception:
             pass
         
         # Admin status
@@ -1141,7 +1141,7 @@ class StatuslineDisplay:
             )
             if result.returncode == 0:
                 return result.stdout.strip()
-        except:
+        except Exception:
             pass
         return None
     
@@ -1153,7 +1153,7 @@ class StatuslineDisplay:
                 return ctypes.windll.shell32.IsUserAnAdmin() != 0
             else:
                 return os.geteuid() == 0
-        except:
+        except Exception:
             return False
     
     def _format_fallback_display(self) -> str:
@@ -1219,14 +1219,14 @@ class StatuslineDisplay:
                 try:
                     with open(daemon_status_file, 'r') as f:
                         status = json.load(f)
-                    
+
                     # Check age of status
                     status_time = datetime.fromisoformat(status.get('timestamp', ''))
                     age = (datetime.now(timezone.utc) - status_time).total_seconds()
-                    
+
                     if age > 300:  # 5 minutes
                         self._start_daemon()
-                except:
+                except Exception:
                     self._start_daemon()
         except Exception:
             pass  # Silently fail - statusline should work even without daemon

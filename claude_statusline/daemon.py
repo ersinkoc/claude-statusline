@@ -11,7 +11,7 @@ import json
 import threading
 import signal
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -44,7 +44,7 @@ class DaemonService:
         # Create lock file with PID
         try:
             pid = os.getpid()
-            safe_json_write({"pid": pid, "started": datetime.now().isoformat()}, self.lock_file)
+            safe_json_write({"pid": pid, "started": datetime.now(timezone.utc).isoformat()}, self.lock_file)
             
             # Register signal handlers
             signal.signal(signal.SIGINT, self._signal_handler)
@@ -72,8 +72,8 @@ class DaemonService:
             try:
                 self.lock_file.unlink()
                 print("✓ Daemon stopped")
-            except:
-                pass
+            except Exception as e:
+                print(f"⚠️ Could not remove lock file: {e}")
                 
     def is_running(self):
         """Check if daemon is running"""
@@ -103,10 +103,13 @@ class DaemonService:
             else:
                 os.kill(pid, 0)
                 return True
-        except:
+        except (OSError, ProcessLookupError, Exception):
             # Process doesn't exist, clean up lock
             if self.lock_file.exists():
-                self.lock_file.unlink()
+                try:
+                    self.lock_file.unlink()
+                except Exception:
+                    pass
             return False
             
     def _update_loop(self):
@@ -117,7 +120,7 @@ class DaemonService:
                 self._update_status("running")
                 
                 # Rebuild database
-                print(f"🔄 Updating database... ({datetime.now().strftime('%H:%M:%S')})")
+                print(f"🔄 Updating database... ({datetime.now(timezone.utc).strftime('%H:%M:%S')})")
                 if self.rebuilder.rebuild_database():
                     print("✓ Database updated successfully")
                 else:
@@ -138,7 +141,7 @@ class DaemonService:
         status_data = {
             "status": status,
             "pid": os.getpid(),
-            "last_update": datetime.now().isoformat(),
+            "last_update": datetime.now(timezone.utc).isoformat(),
             "update_interval": self.update_interval
         }
         safe_json_write(status_data, self.status_file)

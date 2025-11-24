@@ -197,9 +197,15 @@ class BudgetManager:
             critical_threshold = self.budget_config['alerts']['critical_threshold']
             
             if percentage >= critical_threshold * 100:
-                status['alerts'].append(f"🚨 CRITICAL: {period.title()} budget {percentage:.1f}% used (${spent:.2f}/${limit:.2f})")
+                status['alerts'].append({
+                    'type': 'critical',
+                    'message': f"🚨 CRITICAL: {period.title()} budget {percentage:.1f}% used (${spent:.2f}/${limit:.2f})"
+                })
             elif percentage >= warning_threshold * 100:
-                status['alerts'].append(f"⚠️ WARNING: {period.title()} budget {percentage:.1f}% used (${spent:.2f}/${limit:.2f})")
+                status['alerts'].append({
+                    'type': 'warning',
+                    'message': f"⚠️ WARNING: {period.title()} budget {percentage:.1f}% used (${spent:.2f}/${limit:.2f})"
+                })
         
         return status
     
@@ -297,56 +303,6 @@ class BudgetManager:
         print(f"📊 Daily Average: ${daily_avg:.2f}")
         print()
     
-    def export_budget_report(self, format_type: str = 'json', output_path: str = None) -> str:
-        """Export budget report in specified format"""
-        if not output_path:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_path = self.data_dir / f"budget_report_{timestamp}.{format_type}"
-        
-        status = self.check_budget_status()
-        
-        if format_type == 'json':
-            with open(output_path, 'w') as f:
-                json.dump(status, f, indent=2, default=str)
-        elif format_type == 'csv':
-            import csv
-            with open(output_path, 'w', newline='') as csvfile:
-                writer = csv.writer(csvfile)
-                writer.writerow(['Period', 'Spent', 'Limit', 'Remaining', 'Percentage'])
-                for period, data in status['periods'].items():
-                    writer.writerow([
-                        period, data['spent'], data['limit'], 
-                        data['remaining'], f"{data['percentage']:.1f}%"
-                    ])
-        
-        print(f"✅ Budget report exported to: {output_path}")
-        return str(output_path)
-        
-        # Check model limits
-        for model, limits in self.budget_config['model_limits'].items():
-            if not limits['enabled']:
-                continue
-                
-            daily_spent = self.get_model_spending(model, 'daily')
-            monthly_spent = self.get_model_spending(model, 'monthly')
-            
-            daily_limit = limits['daily_limit']
-            monthly_limit = limits['monthly_limit']
-            
-            status['models'][model] = {
-                'daily': {
-                    'spent': daily_spent,
-                    'limit': daily_limit,
-                    'percentage': (daily_spent / daily_limit) * 100 if daily_limit > 0 else 0
-                },
-                'monthly': {
-                    'spent': monthly_spent,
-                    'limit': monthly_limit,
-                    'percentage': (monthly_spent / monthly_limit) * 100 if monthly_limit > 0 else 0
-                }
-            }
-        
-        return status
     
     def display_budget_dashboard(self):
         """Display comprehensive budget dashboard"""
