@@ -15,7 +15,7 @@ Real-time session tracking and analytics for Claude Code with 100+ powerline the
 - 🤖 **Multi-Model Support** - Track Opus, Sonnet, and Haiku models
 - 📁 **Git Integration** - Shows branch info and repository status
 - 💻 **System Info** - CPU, memory, and folder information
-- ⚡ **Lightweight** - Minimal dependencies (only psutil)
+- ⚡ **Lightweight** - Minimal dependencies (psutil + colorama)
 - 📦 **Easy Installation** - Available as a Python package
 
 ### Powerline Themes (v1.9.1 - NEW!)
@@ -196,12 +196,14 @@ MIT License - see LICENSE file for details.
 
 ## Changelog
 
-### v1.9.9 (Latest) - Claude Opus 4.5 Model Support
+### v1.9.9 (Latest) - Claude Opus 4.5 & Security Fixes
 
-- **NEW**: Added support for `claude-opus-4-5-20251101` model
-- **NEW**: Opus 4.5 pricing: $5/M input, $25/M output tokens
-- **IMPROVED**: Updated model_utils.py with Opus 4.5 fallback pattern
-- **IMPROVED**: Updated prices.json with complete Opus 4.5 pricing data
+- **NEW**: Added support for `claude-opus-4-5-20251101` model ($5/M input, $25/M output)
+- **SECURITY**: Fixed command injection vulnerability in Windows cleanup code
+- **FIXED**: Missing return statement in `safe_json_read()` preventing silent failures
+- **FIXED**: Timezone inconsistency in daemon timestamps (now uses UTC)
+- **FIXED**: Obsolete entry points in setup.py synchronized with pyproject.toml
+- **IMPROVED**: Better error handling with specific exception types
 
 ### v1.9.8 - Rebuild Function Bug Fix (HOTFIX)
 

@@ -15,7 +15,7 @@ requirements = (this_directory / "requirements.txt").read_text().strip().split("
 
 setup(
     name="claude-statusline",
-    version="1.9.8",
+    version="1.9.9",
     author="Ersin Koç",
     author_email="ersinkoc@gmail.com",
     description="Real-time session tracking and analytics for Claude Code",
@@ -60,7 +60,9 @@ setup(
             "claude-status=claude_statusline.statusline:main",
             "claude-daemon=claude_statusline.daemon:main",
             "claude-rebuild=claude_statusline.rebuild:main",
-            "claude-template=claude_statusline.template_selector:main",
+            "claude-theme=claude_statusline.interactive_theme_manager:main",
+            "claude-analytics=claude_statusline.analytics_cli:main",
+            "claude-budget=claude_statusline.budget_manager:main",
         ],
     },
     keywords=[
