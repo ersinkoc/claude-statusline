@@ -44,47 +44,59 @@ Real-time session tracking and analytics for Claude Code with 100+ powerline the
 ### Install from PyPI
 
 ```bash
-# Install the package
 pip install claude-statusline
-
-# View current status
-claude-statusline status
-
-# Browse themes interactively
-claude-statusline theme
-
-# Start background daemon
-claude-statusline daemon --start
-
-# View analytics
-claude-statusline analytics
+claude-statusline init
 ```
+
+### One-Line Setup (from source)
+
+**Linux / macOS:**
+```bash
+git clone https://github.com/ersinkoc/claude-statusline.git && cd claude-statusline && bash setup.sh
+```
+
+**Windows (PowerShell):**
+```powershell
+git clone https://github.com/ersinkoc/claude-statusline.git; cd claude-statusline; powershell -ExecutionPolicy Bypass -File setup_windows.ps1
+```
+
+The setup scripts handle everything: pip install, PATH configuration, default configs, database rebuild, and daemon start.
 
 ### Commands Overview
 
 ```bash
-# Core Commands
+claude-statusline status          # Show current session status
+claude-statusline theme           # Browse 100 themes interactively
+claude-statusline daemon --start  # Start background daemon
+claude-statusline analytics       # View usage analytics
+```
+
+### All Commands
+
+```bash
+# Setup & Core
+claude-statusline init            # First-run setup (auto-runs on first use)
 claude-statusline status          # Show current session status
 claude-statusline daemon --start  # Start background monitoring
-claude-statusline theme          # Interactive theme browser
-claude-statusline rebuild        # Rebuild database from logs
+claude-statusline theme           # Interactive theme browser
+claude-statusline rebuild         # Rebuild database from logs
 
-# Analytics Commands
-claude-statusline analytics      # Advanced usage analytics
-claude-statusline trends         # Usage trends and patterns
-claude-statusline health         # System health monitoring
-claude-statusline budget         # Budget management
-claude-statusline sessions       # Session analysis
-claude-statusline model-sessions # Model-specific session statistics
-claude-statusline costs          # Cost analysis
-claude-statusline daily          # Daily reports
-claude-statusline heatmap        # Activity heatmaps
-claude-statusline summary        # Summary statistics
+# Analytics
+claude-statusline analytics       # Advanced usage analytics
+claude-statusline sessions        # Session analysis
+claude-statusline model-sessions  # Model-specific session statistics
+claude-statusline costs           # Cost analysis
+claude-statusline daily           # Daily reports
+claude-statusline heatmap         # Activity heatmaps
+claude-statusline summary         # Summary statistics
+claude-statusline trends          # Usage trends and patterns
+claude-statusline health          # System health monitoring
+claude-statusline budget          # Budget management
 
 # Utilities
-claude-statusline update-prices  # Update model pricing
-claude-statusline verify         # Verify cost calculations
-claude-statusline rotate         # Theme rotation settings
+claude-statusline update-prices   # Update model pricing
+claude-statusline verify          # Verify cost calculations
+claude-statusline rotate          # Theme rotation settings
 ```
 
 ## Theme System
@@ -140,13 +152,27 @@ b   = Theme builder
 ### From PyPI (Recommended)
 ```bash
 pip install claude-statusline
+claude-statusline init    # First-run setup (auto-runs on first use)
 ```
 
-### From Source
+### From Source (with setup script)
+```bash
+git clone https://github.com/ersinkoc/claude-statusline.git
+cd claude-statusline
+
+# Linux / macOS
+bash setup.sh
+
+# Windows (PowerShell)
+powershell -ExecutionPolicy Bypass -File setup_windows.ps1
+```
+
+### Manual Source Install
 ```bash
 git clone https://github.com/ersinkoc/claude-statusline.git
 cd claude-statusline
 pip install -e .
+claude-statusline init
 ```
 
 ## Configuration

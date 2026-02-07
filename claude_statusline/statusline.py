@@ -1232,40 +1232,30 @@ class StatuslineDisplay:
             pass  # Silently fail - statusline should work even without daemon
     
     def _start_daemon(self):
-        """Start unified daemon"""
+        """Start background daemon process"""
         try:
-            script_dir = Path(__file__).parent
-            daemon_script = script_dir / "unified_daemon.py"
-            
+            daemon_script = Path(__file__).parent / "daemon.py"
             if not daemon_script.exists():
                 return
-            
-            # Start daemon
-            cmd = [sys.executable, str(daemon_script), '--daemon', '--data-dir', str(self.data_dir)]
-            
+
+            cmd = [sys.executable, str(daemon_script), '--start']
+
             if sys.platform == 'win32':
-                # Windows: Detached process
-                CREATE_NEW_PROCESS_GROUP = 0x00000200
-                DETACHED_PROCESS = 0x00000008
                 CREATE_NO_WINDOW = 0x08000000
-                
                 subprocess.Popen(
                     cmd,
-                    creationflags=CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS | CREATE_NO_WINDOW,
+                    creationflags=CREATE_NO_WINDOW,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                     stdin=subprocess.DEVNULL,
-                    cwd=script_dir
                 )
             else:
-                # Unix: Daemon process
                 subprocess.Popen(
                     cmd,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                     stdin=subprocess.DEVNULL,
                     start_new_session=True,
-                    cwd=script_dir
                 )
         except Exception:
             pass

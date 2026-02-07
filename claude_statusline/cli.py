@@ -26,6 +26,7 @@ Usage: claude-statusline <command> [options]
 
 Core Commands:
 --------------
+  init            First-run setup (auto-runs on first use)
   status          Show current session status
   daemon          Manage background daemon (--start, --status, --stop)
   rebuild         Rebuild database from JSONL files
@@ -82,6 +83,20 @@ def main():
         print(f"claude-statusline v{__version__}")
         sys.exit(0)
     
+    # Handle init command
+    if cmd == 'init':
+        from claude_statusline.init import Initializer
+        Initializer().run()
+        sys.exit(0)
+
+    # Auto-detect first run
+    if cmd not in ('init', '-h', '--help', 'help', '-v', '--version'):
+        from claude_statusline.init import is_initialized
+        if not is_initialized():
+            print("First run detected. Running initialization...\n")
+            from claude_statusline.init import Initializer
+            Initializer().run()
+
     # Handle commands
     try:
         if cmd == 'status':

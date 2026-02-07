@@ -14,13 +14,22 @@ logger = logging.getLogger(__name__)
 
 def safe_json_read(file_path: Path, max_retries: int = 3, retry_delay: float = 0.1):
     """
-    Safely read JSON file with retries
+    Safely read JSON file with retries.
+
+    Returns None if file does not exist, allowing callers to use:
+        data = safe_json_read(path) or {}
     """
+    if not file_path.exists():
+        return None
+
     last_exception = None
     for attempt in range(max_retries):
         try:
             with open(file_path, 'r') as f:
                 return json.load(f)
+        except FileNotFoundError:
+            # File was deleted between exists() check and open()
+            return None
         except (IOError, OSError) as e:
             last_exception = e
             if attempt < max_retries - 1:
@@ -35,7 +44,7 @@ def safe_json_read(file_path: Path, max_retries: int = 3, retry_delay: float = 0
                 continue
             raise
 
-    # This should never be reached, but ensure we don't return None
+    # This should never be reached, but ensure we don't return None silently
     if last_exception:
         raise last_exception
     raise RuntimeError(f"Failed to read {file_path} after {max_retries} retries")

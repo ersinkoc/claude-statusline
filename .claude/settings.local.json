@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m py_compile:*)",
+      "Bash(\"C:\\\\Users\\\\ersin\\\\AppData\\\\Roaming\\\\Python\\\\Python314\\\\Scripts\\\\claude-statusline.exe\" init)"
+    ]
+  }
+}
