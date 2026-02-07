@@ -338,7 +338,7 @@ class UnifiedPowerlineSystem:
                             return f"{hours}h{minutes:02d}m"
                         else:
                             return f"{minutes}m"
-                except:
+                except (ValueError, KeyError, TypeError):
                     pass
                 return "0m"
             
@@ -389,7 +389,7 @@ class UnifiedPowerlineSystem:
                         if len(branch) > 15:
                             return branch[:12] + "..."
                         return branch
-                except:
+                except (subprocess.SubprocessError, OSError, ValueError):
                     pass
                 return "main"
             
@@ -435,10 +435,10 @@ class UnifiedPowerlineSystem:
                         start_dt = datetime.fromisoformat(session_start)
                         end_dt = start_dt + timedelta(hours=5)
                         return end_dt.strftime("%H:%M UTC")
-                except:
+                except (ValueError, KeyError, TypeError):
                     pass
                 return "--:--"
-            
+
             elif widget_type == 'session_remaining':
                 # Calculate remaining time in session
                 try:
@@ -455,10 +455,10 @@ class UnifiedPowerlineSystem:
                             return f"{hours}h{minutes:02d}m"
                         else:
                             return "ended"
-                except:
+                except (ValueError, KeyError, TypeError):
                     pass
                 return "--:--"
-            
+
             elif widget_type == 'session_end_local':
                 # Session end in system's local timezone
                 try:
@@ -476,10 +476,10 @@ class UnifiedPowerlineSystem:
                         # Convert to local time using system's timezone
                         local_end = end_dt.astimezone()
                         return local_end.strftime("%H:%M")
-                except:
+                except (ValueError, KeyError, TypeError):
                     pass
                 return "--:--"
-            
+
             else:
                 return "N/A"
         
@@ -614,7 +614,7 @@ class UnifiedPowerlineSystem:
             
             progress = elapsed.total_seconds() / total_duration.total_seconds()
             return min(1.0, max(0.0, progress))
-        except:
+        except (ValueError, KeyError, TypeError):
             return 0.0
     
     def render_simple_theme(self, theme_name):

@@ -165,7 +165,7 @@ class CostAnalyzer:
             try:
                 date = datetime.fromisoformat(date_str + "T00:00:00")
                 weekday = date.strftime('%A')
-            except:
+            except (ValueError, TypeError):
                 weekday = '?'
             
             print(f"{date_str:<12} ${cost:>11,.2f} {weekday:<12}")

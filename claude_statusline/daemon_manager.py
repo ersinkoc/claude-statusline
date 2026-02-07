@@ -60,7 +60,7 @@ class DaemonManager:
                 try:
                     os.kill(pid, 0)
                     return True
-                except:
+                except (ProcessLookupError, PermissionError, OSError):
                     return False
             
         except Exception:

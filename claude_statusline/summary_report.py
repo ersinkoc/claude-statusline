@@ -122,9 +122,9 @@ class SummaryReportGenerator:
                 last = datetime.fromisoformat(last_date + "T00:00:00")
                 span = (last - first).days + 1
                 print(f"Time Span       : {span} days")
-            except:
+            except (ValueError, TypeError):
                 pass
-    
+
     def generate_weekly_summary(self, weeks: int = 4):
         """Generate weekly summaries"""
         print("\n" + "="*80)
@@ -258,9 +258,9 @@ class SummaryReportGenerator:
                         
                         if daily_messages > 0:
                             month_data['active_days'] += 1
-                except:
+                except (ValueError, TypeError):
                     pass
-            
+
             # Count sessions
             work_sessions = self.db.get('work_sessions', {})
             for date_str, sessions in work_sessions.items():
@@ -268,9 +268,9 @@ class SummaryReportGenerator:
                     date = datetime.fromisoformat(date_str + "T00:00:00")
                     if date.year == year and date.month == month:
                         month_data['sessions'] += len(sessions)
-                except:
+                except (ValueError, TypeError):
                     pass
-            
+
             if month_data['messages'] > 0:
                 monthly_stats.append(month_data)
         

@@ -21,26 +21,13 @@ def load_model_prices(data_dir: Path = None) -> Dict[str, Any]:
     Load model pricing data from prices.json.
 
     Args:
-        data_dir: Optional data directory override
+        data_dir: Optional data directory override (unused, kept for API compat)
 
     Returns:
         Dictionary containing pricing data
     """
-    if data_dir is None:
-        data_dir = get_default_data_directory()
-
-    prices_file = data_dir / "prices.json"
-
-    if not prices_file.exists():
-        print_warning(f"Prices file not found: {prices_file}")
-        return {}
-
-    try:
-        with open(prices_file, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except (json.JSONDecodeError, IOError) as e:
-        print_error(f"Error loading prices: {e}")
-        return {}
+    from .model_utils import load_prices_data
+    return load_prices_data()
 
 
 def get_model_prices(prices_data: Dict[str, Any], model: str) -> Dict[str, float]:
@@ -67,10 +54,10 @@ def get_model_prices(prices_data: Dict[str, Any], model: str) -> Dict[str, float
 
     # Return fallback pricing
     return prices_data.get('fallback_pricing', {
-        'input': 15.0,
-        'output': 75.0,
-        'cache_write_5m': 18.75,
-        'cache_read': 1.5
+        'input': 5.0,
+        'output': 25.0,
+        'cache_write_5m': 6.25,
+        'cache_read': 0.5
     })
 
 

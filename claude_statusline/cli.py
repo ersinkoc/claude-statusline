@@ -169,10 +169,10 @@ def main():
 
             # Parse subcommands
             if len(sys.argv) > 2 and sys.argv[2] == '--patterns':
-                analyzer.analyze_usage_patterns()
+                analyzer.analyze_session_patterns()
             elif len(sys.argv) > 2 and sys.argv[2] == '--top':
                 n = int(sys.argv[3]) if len(sys.argv) > 3 else 10
-                analyzer.get_top_sessions(n)
+                analyzer.find_longest_sessions(n)
             else:
                 analyzer.analyze_all_sessions()
 

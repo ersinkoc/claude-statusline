@@ -5,20 +5,20 @@ Real-time session tracking and analytics for Claude Code with 100+ powerline the
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-1.9.9-green.svg)
+![Version](https://img.shields.io/badge/version-2.0.0-green.svg)
 
 ## Features
 
 ### Core Features
 - 📊 **Real-time Monitoring** - Track active sessions with live updates
 - 💰 **Cost Tracking** - Accurate cost calculation based on official pricing
-- 🤖 **Multi-Model Support** - Track Opus, Sonnet, and Haiku models
+- 🤖 **Multi-Model Support** - Track Opus 4.6, Sonnet 4.5, Haiku and all Claude models
 - 📁 **Git Integration** - Shows branch info and repository status
 - 💻 **System Info** - CPU, memory, and folder information
 - ⚡ **Lightweight** - Minimal dependencies (psutil + colorama)
 - 📦 **Easy Installation** - Available as a Python package
 
-### Powerline Themes (v1.9.1 - NEW!)
+### Powerline Themes
 - 🎨 **100 Professional Themes** - Carefully designed powerline themes with logical widget grouping
 - 🌈 **Advanced RGB Colors** - True color output with soft, pleasant color schemes
 - 🔧 **Interactive Theme Browser** - Navigate themes with live preview and search
@@ -109,7 +109,7 @@ b   = Theme builder
 
 ## Analytics Features
 
-### Model Session Analytics (v1.9.3 - NEW!)
+### Model Session Analytics
 - **Session-by-Session Breakdown** - Detailed statistics for each model per session
 - **Token-Level Analysis** - Input, output, cache creation, and cache read tokens
 - **Accurate Cost Calculation** - Precise cost tracking based on official model pricing
@@ -144,7 +144,7 @@ pip install claude-statusline
 
 ### From Source
 ```bash
-git clone https://github.com/yourusername/claude-statusline.git
+git clone https://github.com/ersinkoc/claude-statusline.git
 cd claude-statusline
 pip install -e .
 ```
@@ -196,7 +196,22 @@ MIT License - see LICENSE file for details.
 
 ## Changelog
 
-### v1.9.9 (Latest) - Claude Opus 4.5 & Security Fixes
+### v2.0.0 (Latest) - Major Quality & Reliability Release
+
+- **NEW**: Claude Opus 4.6 model support (`claude-opus-4-6-20260205`, $5/M input, $25/M output)
+- **NEW**: Centralized price loading with module-level caching for better performance
+- **NEW**: Centralized timezone utility with DST-safe implementation
+- **SECURITY**: Fixed all 36 bare `except:` clauses with proper exception types across 14 files
+- **FIXED**: CLI `sessions` command crash from incorrect method name references
+- **FIXED**: Fallback pricing updated from legacy $15/$75 to current $5/$25
+- **FIXED**: Windows PID detection using psutil with exact-match tasklist fallback
+- **FIXED**: Timezone DST bug in activity heatmap (was using buggy `time.altzone` approach)
+- **IMPROVED**: Daemon sleep loop optimized (60x1s → 12x5s chunks) for faster shutdown
+- **IMPROVED**: Database rebuild returns proper boolean status
+- **IMPROVED**: Windows path traversal validation for system directories
+- **IMPROVED**: Python 3.13 and 3.14 classifiers added
+
+### v1.9.9 - Claude Opus 4.5 & Security Fixes
 
 - **NEW**: Added support for `claude-opus-4-5-20251101` model ($5/M input, $25/M output)
 - **SECURITY**: Fixed command injection vulnerability in Windows cleanup code

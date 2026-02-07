@@ -1,10 +1,20 @@
 {
-  "last_updated": "2025-11-25",
+  "last_updated": "2026-02-07",
   "source": "https://www.anthropic.com/pricing",
   "currency": "USD",
   "per_million_tokens": true,
   "update_frequency": "weekly",
   "models": {
+    "claude-opus-4-6-20260205": {
+      "input": 5.0,
+      "output": 25.0,
+      "cache_write_5m": 6.25,
+      "cache_write_1h": 10.0,
+      "cache_read": 0.5,
+      "name": "Opus 4.6",
+      "tier": "flagship",
+      "active": true
+    },
     "claude-opus-4-5-20251101": {
       "input": 5.0,
       "output": 25.0,
@@ -167,10 +177,10 @@
     }
   },
   "fallback_pricing": {
-    "input": 15.0,
-    "output": 75.0,
-    "cache_write_5m": 18.75,
-    "cache_read": 1.5
+    "input": 5.0,
+    "output": 25.0,
+    "cache_write_5m": 6.25,
+    "cache_read": 0.5
   },
   "pricing_notes": {
     "token_mapping": {

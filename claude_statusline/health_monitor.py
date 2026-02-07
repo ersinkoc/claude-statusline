@@ -102,7 +102,7 @@ class HealthMonitor:
                             else:
                                 print(f"⚠️ Daemon hasn't updated in {time_diff}")
                                 return False
-                        except:
+                        except (ValueError, TypeError):
                             print("⚠️ Cannot parse last update time")
                             return False
                     else:

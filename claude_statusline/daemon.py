@@ -93,13 +93,22 @@ class DaemonService:
         # Check if process exists
         try:
             if sys.platform == "win32":
-                import subprocess
-                result = subprocess.run(
-                    ["tasklist", "/FI", f"PID eq {pid}"],
-                    capture_output=True,
-                    text=True
-                )
-                return str(pid) in result.stdout
+                try:
+                    import psutil
+                    return psutil.pid_exists(pid)
+                except ImportError:
+                    import subprocess
+                    result = subprocess.run(
+                        ["tasklist", "/FI", f"PID eq {pid}"],
+                        capture_output=True,
+                        text=True
+                    )
+                    # Check for exact PID match to avoid partial matches
+                    for line in result.stdout.strip().splitlines():
+                        parts = line.split()
+                        if len(parts) >= 2 and parts[1] == str(pid):
+                            return True
+                    return False
             else:
                 os.kill(pid, 0)
                 return True
@@ -126,11 +135,12 @@ class DaemonService:
                 else:
                     print("⚠️ Database update failed")
                     
-                # Wait for next update
-                for _ in range(self.update_interval):
-                    if not self.running:
-                        break
-                    time.sleep(1)
+                # Wait for next update (check running flag every 5 seconds)
+                elapsed = 0
+                while elapsed < self.update_interval and self.running:
+                    sleep_chunk = min(5, self.update_interval - elapsed)
+                    time.sleep(sleep_chunk)
+                    elapsed += sleep_chunk
                     
             except Exception as e:
                 print(f"⚠️ Update error: {e}")

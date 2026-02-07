@@ -47,9 +47,9 @@ class SessionAnalyzer:
                         session_copy = session.copy()
                         session_copy['date'] = date_str
                         all_sessions.append(session_copy)
-                    except:
+                    except (ValueError, KeyError, TypeError):
                         pass
-        
+
         if not all_sessions:
             print("❌ No valid session data found!")
             return
@@ -103,9 +103,9 @@ class SessionAnalyzer:
                     session_durations.append(duration)
                 else:
                     incomplete_sessions += 1
-            except:
+            except (ValueError, KeyError, TypeError):
                 pass
-        
+
         # Print overall statistics
         print("📊 OVERALL STATISTICS")
         print("-" * 40)
@@ -158,7 +158,7 @@ class SessionAnalyzer:
             try:
                 start_time = datetime.fromisoformat(session['session_start'].replace('Z', '+00:00'))
                 start_str = start_time.astimezone().strftime('%H:%M')
-            except:
+            except (ValueError, KeyError, TypeError):
                 start_str = '?'
             
             model = self._get_model_display_name(session.get('primary_model', 'unknown'))[:15]
@@ -184,16 +184,16 @@ class SessionAnalyzer:
                 date = datetime.fromisoformat(date_str + "T00:00:00+00:00")
                 weekday = date.strftime('%A')
                 day_distribution[weekday] += len(sessions)
-            except:
+            except (ValueError, KeyError, TypeError):
                 pass
-            
+
             for session in sessions:
                 if isinstance(session, dict):
                     try:
                         start = datetime.fromisoformat(session['session_start'].replace('Z', '+00:00'))
                         hour = start.astimezone().hour
                         hour_distribution[hour] += 1
-                    except:
+                    except (ValueError, KeyError, TypeError):
                         pass
         
         # Print day of week distribution
@@ -258,7 +258,7 @@ class SessionAnalyzer:
                 start_str = start.astimezone().strftime('%H:%M')
                 end_str = end.astimezone().strftime('%H:%M')
                 time_range = f"{start_str}-{end_str}"
-            except:
+            except (ValueError, KeyError, TypeError):
                 time_range = "?"
             
             model = self._get_model_display_name(session.get('primary_model', 'unknown'))[:15]

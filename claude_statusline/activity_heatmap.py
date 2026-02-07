@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any
 from collections import defaultdict
 
-from .data_directory_utils import resolve_data_directory
+from .data_directory_utils import resolve_data_directory, get_local_timezone_offset
 from .safe_file_operations import safe_json_read
 
 
@@ -47,11 +47,11 @@ class ActivityHeatmapGenerator:
                     
                     if messages > 0:
                         # Convert UTC to local time
-                        local_hour = (hour + self._get_timezone_offset()) % 24
+                        local_hour = (hour + get_local_timezone_offset()) % 24
                         heatmap[weekday][local_hour] += messages
-            except:
+            except (ValueError, KeyError, TypeError):
                 pass
-        
+
         if not heatmap:
             print("❌ No activity data found!")
             return
@@ -129,9 +129,9 @@ class ActivityHeatmapGenerator:
                         'messages': total_messages,
                         'cost': total_cost
                     }
-            except:
+            except (ValueError, KeyError, TypeError):
                 pass
-        
+
         if not daily_stats:
             print("❌ No data for this month!")
             return
@@ -194,7 +194,7 @@ class ActivityHeatmapGenerator:
                 
                 if messages > 0:
                     # Convert to local time
-                    local_hour = (hour + self._get_timezone_offset()) % 24
+                    local_hour = (hour + get_local_timezone_offset()) % 24
                     hourly_totals[local_hour]['messages'] += messages
                     hourly_totals[local_hour]['cost'] += hour_data.get('cost', 0.0)
                     hourly_totals[local_hour]['days'].add(date_str)
@@ -315,12 +315,8 @@ class ActivityHeatmapGenerator:
                 print(f"\nMost Active Day: {most_active_day[0]} ({most_active_day[1]:,} messages)")
     
     def _get_timezone_offset(self):
-        """Get local timezone offset from UTC"""
-        import time
-        if time.daylight:
-            return -time.altzone // 3600
-        else:
-            return -time.timezone // 3600
+        """Get local timezone offset from UTC (deprecated, use get_local_timezone_offset)"""
+        return get_local_timezone_offset()
 
 
 def main():

@@ -24,9 +24,9 @@ def list_themes():
         # Get FULL POWERLINE RENDER
         try:
             full_render = UNIFIED_POWERLINE.render_theme(theme_name)
-        except:
+        except Exception:
             full_render = "[render error]"
-        
+
         # Show theme number, name and FULL powerline
         indicator = ">>>" if theme_name == current else "   "
         print(f"{indicator} {i:3d}. {theme_name:<15}")
@@ -65,7 +65,7 @@ def select_theme():
             # Get FULL POWERLINE RENDER
             try:
                 full_render = UNIFIED_POWERLINE.render_theme(theme)
-            except:
+            except Exception:
                 full_render = "[render error]"
             
             print(f"{indicator} {i+1:3d}. {theme:<15}")

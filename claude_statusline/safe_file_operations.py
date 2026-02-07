@@ -63,7 +63,7 @@ def safe_json_write(data: dict, file_path: Path, max_retries: int = 3, retry_del
                 if os.name == 'nt' and file_path.exists():
                     try:
                         os.remove(file_path)
-                    except:
+                    except OSError:
                         pass
                 
                 # Rename temp to target

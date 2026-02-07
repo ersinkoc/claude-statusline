@@ -7,6 +7,7 @@ Ensures consistent use of .claude/data-statusline directory structure.
 """
 
 import os
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -85,7 +86,10 @@ def resolve_data_directory(data_dir: Optional[Path] = None) -> Path:
 
         # Check for path traversal patterns
         path_str = str(data_dir)
-        if '..' in path_str or path_str.startswith('/etc') or path_str.startswith('/sys'):
+        blocked_prefixes = ['/etc', '/sys', '/proc']
+        if os.name == 'nt':
+            blocked_prefixes.extend(['C:\\Windows', 'C:\\Program Files'])
+        if '..' in path_str or any(path_str.startswith(p) for p in blocked_prefixes):
             raise ValueError(f"Invalid data directory path: {data_dir}")
 
         # Ensure resolved path is within allowed directories
@@ -103,3 +107,16 @@ def resolve_data_directory(data_dir: Optional[Path] = None) -> Path:
         return data_dir
 
     return get_default_data_directory()
+
+
+def get_local_timezone_offset() -> int:
+    """
+    Get local timezone offset from UTC in hours.
+
+    Uses the modern datetime approach which correctly handles DST.
+
+    Returns:
+        int: Timezone offset in hours (e.g. 3 for UTC+3, -5 for UTC-5)
+    """
+    local_offset = datetime.now().astimezone().utcoffset()
+    return int(local_offset.total_seconds() / 3600)

@@ -118,9 +118,9 @@ class AnalyticsCLI:
                 day = start_time.strftime("%Y-%m-%d")
                 daily_stats[day]["messages"] += session.get("message_count", 0)
                 daily_stats[day]["cost"] += session.get("total_cost", 0.0)
-            except:
+            except (ValueError, KeyError, TypeError):
                 continue
-                
+
         for day in sorted(daily_stats.keys())[-7:]:
             stats = daily_stats[day]
             print(f"  {day}: {stats['messages']:4} msgs  ${stats['cost']:7.2f}")
@@ -143,9 +143,9 @@ class AnalyticsCLI:
                 if start_time >= month_start:
                     month_messages += session.get("message_count", 0)
                     month_cost += session.get("total_cost", 0.0)
-            except:
+            except (ValueError, KeyError, TypeError):
                 continue
-                
+
         print(f"  Messages: {month_messages:,}")
         print(f"  Cost: ${month_cost:.2f}")
         
@@ -164,9 +164,9 @@ class AnalyticsCLI:
                     if (now - end_time).total_seconds() < 5 * 3600:  # 5 hours
                         active_session = session
                         break
-            except:
+            except (ValueError, KeyError, TypeError):
                 continue
-                
+
         if active_session:
             model = active_session.get("primary_model", "unknown")
             if "-" in model and len(model.split("-")) > 2:

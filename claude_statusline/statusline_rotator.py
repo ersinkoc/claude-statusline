@@ -47,7 +47,7 @@ class StatuslineRotator:
             "📈 Track: Your most productive hours with analytics",
             "💰 Save: Monitor costs with cost_analyzer.py",
             "🚀 Boost: Use cache tokens to reduce costs",
-            "🧠 Smart: Opus 4.1 is the most capable model"
+            "🧠 Smart: Opus 4.6 is the most capable model"
         ]
     
     def _load_prices(self) -> Dict[str, Any]:
@@ -57,7 +57,7 @@ class StatuslineRotator:
             if prices_file.exists():
                 with open(prices_file, 'r') as f:
                     return json.load(f)
-        except:
+        except (json.JSONDecodeError, OSError):
             pass
         return {"models": {}}
     
@@ -76,9 +76,9 @@ class StatuslineRotator:
             }
             with open(self.rotation_file, 'w') as f:
                 json.dump(state, f)
-        except:
+        except (OSError, TypeError):
             pass
-    
+
     def format_main_status(self, session_data: Dict[str, Any]) -> str:
         """Format main status line (default)"""
         model = session_data.get('model', 'Unknown')
@@ -212,7 +212,7 @@ class StatuslineRotator:
             
             return f"📊 Week: {weekly_sessions} sessions | {weekly_messages} msgs | ${weekly_cost:.2f} total | ${avg_daily:.2f}/day avg"
         
-        except:
+        except Exception:
             return "📊 This week: Let's make it productive! 🎯"
     
     def format_fun_tip(self) -> str:
@@ -253,7 +253,7 @@ class StatuslineRotator:
             
             return f"⚙️ System: {daemon_str} | {data_str} | 🔧 All systems operational"
         
-        except:
+        except Exception:
             return "⚙️ System: Statusline ready | Type 'python daily_report.py' for analytics"
     
     def format_productivity_insight(self) -> str:
@@ -270,7 +270,7 @@ class StatuslineRotator:
                         try:
                             hour = datetime.fromisoformat(start.replace('Z', '+00:00')).hour
                             hour_counts[hour] = hour_counts.get(hour, 0) + 1
-                        except:
+                        except (ValueError, KeyError, TypeError):
                             pass
             
             if hour_counts:
@@ -279,7 +279,7 @@ class StatuslineRotator:
             else:
                 return "🏆 Start tracking to discover your most productive hours!"
         
-        except:
+        except Exception:
             return "🏆 Productivity insights will appear as you work"
     
     def _get_model_display_name(self, model: str) -> str:

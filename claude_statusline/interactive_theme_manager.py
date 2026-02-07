@@ -18,7 +18,7 @@ class InteractiveThemeManager:
         # Find current theme index
         try:
             self.current_index = self.themes.index(self.current_theme)
-        except:
+        except (ValueError, IndexError):
             pass
         
     def clear_screen(self):
@@ -112,7 +112,7 @@ class InteractiveThemeManager:
                     else:
                         print("Invalid number! Must be 1-100")
                         time.sleep(1)
-                except:
+                except (ValueError, TypeError):
                     print("Invalid input!")
                     time.sleep(1)
                     

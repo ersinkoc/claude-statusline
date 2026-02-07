@@ -13,7 +13,7 @@ from typing import Dict, List, Any
 from collections import defaultdict
 # No locale needed for general use
 
-from .data_directory_utils import resolve_data_directory
+from .data_directory_utils import resolve_data_directory, get_local_timezone_offset as _central_tz_offset
 from .safe_file_operations import safe_json_read
 
 
@@ -31,8 +31,7 @@ class DailyReportGenerator:
     
     def get_local_timezone_offset(self):
         """Get local timezone offset in hours"""
-        local_offset = datetime.now().astimezone().utcoffset()
-        return int(local_offset.total_seconds() / 3600)
+        return _central_tz_offset()
     
     def format_number(self, num):
         """Format number with thousand separators"""
@@ -168,9 +167,9 @@ class DailyReportGenerator:
                         'messages': session.get('message_count', 0),
                         'cost': session.get('cost', 0.0)
                     })
-                except:
+                except (ValueError, KeyError, TypeError):
                     pass
-        
+
         return sessions
     
     def generate_date_range_report(self, days: int = 7):

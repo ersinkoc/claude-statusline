@@ -118,12 +118,12 @@ class SafeConsoleOutput:
             sys.__stdout__.write(ascii_text + end)
             if flush:
                 sys.__stdout__.flush()
-        except:
+        except (UnicodeEncodeError, OSError):
             # Ultimate fallback - write byte by byte
             for char in safe_text:
                 try:
                     sys.__stdout__.write(char)
-                except:
+                except (UnicodeEncodeError, OSError):
                     sys.__stdout__.write('?')
             sys.__stdout__.write(end)
             if flush:

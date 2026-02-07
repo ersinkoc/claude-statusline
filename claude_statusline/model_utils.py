@@ -7,6 +7,34 @@ Centralized model name resolution and display formatting
 import json
 from pathlib import Path
 
+# Module-level cache for prices data
+_prices_cache = None
+
+
+def load_prices_data(force_reload: bool = False) -> dict:
+    """
+    Load and cache prices.json data.
+
+    Uses module-level cache to avoid repeated file I/O.
+
+    Args:
+        force_reload: If True, reload from disk even if cached
+
+    Returns:
+        dict: Prices data dictionary
+    """
+    global _prices_cache
+    if _prices_cache is not None and not force_reload:
+        return _prices_cache
+
+    prices_file = Path(__file__).parent / "prices.json"
+    try:
+        with open(prices_file, 'r', encoding='utf-8') as f:
+            _prices_cache = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        _prices_cache = {}
+    return _prices_cache
+
 
 def get_model_display_name(model: str, prices_data: dict = None) -> str:
     """
@@ -21,12 +49,7 @@ def get_model_display_name(model: str, prices_data: dict = None) -> str:
     """
     # Load prices data if not provided
     if prices_data is None:
-        prices_file = Path(__file__).parent / "prices.json"
-        try:
-            with open(prices_file, 'r', encoding='utf-8') as f:
-                prices_data = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            prices_data = {}
+        prices_data = load_prices_data()
 
     # First try to find exact match in prices.json
     model_info = prices_data.get('models', {}).get(model)
@@ -50,7 +73,9 @@ def get_model_display_name(model: str, prices_data: dict = None) -> str:
     model_lower = model.lower()
 
     # Check for specific patterns first (more specific first)
-    if 'opus-4-5' in model_lower:
+    if 'opus-4-6' in model_lower:
+        return '🧠 Opus 4.6'
+    elif 'opus-4-5' in model_lower:
         return '🧠 Opus 4.5'
     elif 'opus-4-1' in model_lower:
         return '🧠 Opus 4.1'
@@ -95,12 +120,7 @@ def get_model_tier(model: str, prices_data: dict = None) -> str:
     """
     # Load prices data if not provided
     if prices_data is None:
-        prices_file = Path(__file__).parent / "prices.json"
-        try:
-            with open(prices_file, 'r', encoding='utf-8') as f:
-                prices_data = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            prices_data = {}
+        prices_data = load_prices_data()
 
     model_info = prices_data.get('models', {}).get(model)
     if model_info and 'tier' in model_info:

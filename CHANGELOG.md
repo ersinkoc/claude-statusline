@@ -5,6 +5,76 @@ All notable changes to Claude Statusline will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-02-07
+
+### 🚀 Claude Opus 4.6 Model Support
+
+- **NEW**: Added support for `claude-opus-4-6-20260205` model
+- **NEW**: Opus 4.6 pricing: $5/M input, $25/M output tokens (same as Opus 4.5)
+- **IMPROVED**: Updated model_utils.py with Opus 4.6 fallback pattern (highest priority)
+- **IMPROVED**: Updated prices.json with complete Opus 4.6 pricing data
+
+### 🔧 Code Quality Overhaul
+
+- **FIXED**: Eliminated ALL remaining bare `except:` clauses (36 instances across 14 files)
+  - `analytics_cli.py`: 3 instances -> specific `(ValueError, KeyError, TypeError)`
+  - `activity_heatmap.py`: 2 instances -> specific types
+  - `daily_report.py`: 1 instance -> specific types
+  - `health_monitor.py`: 1 instance -> `(ValueError, TypeError)`
+  - `interactive_theme_manager.py`: 2 instances -> specific types
+  - `session_analyzer.py`: 6 instances -> specific types
+  - `simple_theme_selector.py`: 2 instances -> `Exception`
+  - `unified_powerline_system.py`: 6 instances -> specific types
+  - `console_utils.py`: 2 instances -> `(UnicodeEncodeError, OSError)`
+  - `daemon_manager.py`: 1 instance -> `(ProcessLookupError, PermissionError, OSError)`
+  - `safe_file_operations.py`: 1 instance -> `OSError`
+  - `summary_report.py`: 3 instances -> `(ValueError, TypeError)`
+  - `cost_analyzer.py`: 1 instance -> `(ValueError, TypeError)`
+  - `statusline_rotator.py`: 6 instances -> specific types
+
+### 🏗️ Architecture Improvements
+
+- **NEW**: Centralized timezone utility (`get_local_timezone_offset()`) in `data_directory_utils.py`
+  - Replaced buggy `time.daylight`/`time.altzone` approach in `activity_heatmap.py`
+  - Uses modern `datetime.now().astimezone().utcoffset()` for correct DST handling
+  - `daily_report.py` now delegates to centralized function
+- **NEW**: Centralized price loading with caching (`load_prices_data()`) in `model_utils.py`
+  - Module-level cache eliminates repeated disk I/O on every call
+  - `model_session_stats.py` now uses centralized loader
+- **IMPROVED**: Reduced code duplication across analytics modules
+
+### 🐛 Bug Fixes
+
+- **CRITICAL**: Fixed CLI method name mismatch for `sessions --patterns` and `sessions --top` commands
+  - `analyze_usage_patterns()` -> `analyze_session_patterns()` (correct method name)
+  - `get_top_sessions()` -> `find_longest_sessions()` (correct method name)
+- **HIGH**: Fixed `rebuild.py` returning `None` instead of `False` when no JSONL files found
+- **HIGH**: Fixed redundant model check in `rebuild.py` (double `startswith('claude-')` check)
+- **HIGH**: Fixed indentation error from redundant if-block removal in model statistics
+- **HIGH**: Updated fallback pricing from old Opus 3 rates ($15/$75) to current Opus 4.5/4.6 rates ($5/$25)
+  - Updated in `rebuild.py`, `model_session_stats.py`, and `prices.json` fallback_pricing
+- **MEDIUM**: Fixed Windows PID detection in `daemon.py` using `psutil.pid_exists()` with tasklist fallback
+  - Prevents partial PID matching (e.g., PID 123 matching 1234)
+- **MEDIUM**: Fixed Windows path traversal validation in `data_directory_utils.py`
+  - Added `C:\Windows` and `C:\Program Files` to blocked prefixes
+- **MEDIUM**: Optimized daemon sleep loop (5-second chunks instead of 1-second iterations)
+
+### 📦 Package Updates
+
+- **IMPROVED**: Added Python 3.13 and 3.14 classifiers
+- **IMPROVED**: Updated `last_updated` date in prices.json
+- **IMPROVED**: Updated statusline_rotator tip to reference Opus 4.6
+
+### ⚠️ Breaking Changes
+
+**NONE** - This release is fully backward compatible
+
+### 📦 Migration
+
+**No migration required** - Drop-in replacement for 1.9.9
+
+---
+
 ## [1.9.9] - 2025-11-25
 
 ### 🚀 Claude Opus 4.5 Model Support

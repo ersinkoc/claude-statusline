@@ -61,7 +61,7 @@ class DatabaseRebuilder:
         
         if not jsonl_files:
             print("❌ No JSONL files found!")
-            return
+            return False
         
         # Initialize data structures
         hourly_statistics = defaultdict(lambda: defaultdict(lambda: {
@@ -156,16 +156,15 @@ class DatabaseRebuilder:
                             hour_data['total_tokens'] += (input_tokens + output_tokens + cache_creation + cache_read)
                             hour_data['cost'] += cost
                             
-                            # Update model statistics (only for Claude models)
-                            if model.startswith('claude-'):
-                                model_data = hour_data['models'][model]
-                                model_data['messages'] += 1
-                                model_data['input_tokens'] += input_tokens
-                                model_data['output_tokens'] += output_tokens
-                                model_data['cache_creation_input_tokens'] += cache_creation
-                                model_data['cache_read_input_tokens'] += cache_read
-                                model_data['total_tokens'] += (input_tokens + output_tokens + cache_creation + cache_read)
-                                model_data['cost'] += cost
+                            # Update model statistics (already filtered to Claude models above)
+                            model_data = hour_data['models'][model]
+                            model_data['messages'] += 1
+                            model_data['input_tokens'] += input_tokens
+                            model_data['output_tokens'] += output_tokens
+                            model_data['cache_creation_input_tokens'] += cache_creation
+                            model_data['cache_read_input_tokens'] += cache_read
+                            model_data['total_tokens'] += (input_tokens + output_tokens + cache_creation + cache_read)
+                            model_data['cost'] += cost
                             
                             total_messages += 1
                             file_messages += 1
@@ -414,10 +413,10 @@ class DatabaseRebuilder:
         cache_creation = usage.get('cache_creation_input_tokens', 0)
         cache_read = usage.get('cache_read_input_tokens', 0)
         
-        input_cost = (input_tokens / 1_000_000) * model_prices.get('input', 15.0)
-        output_cost = (output_tokens / 1_000_000) * model_prices.get('output', 75.0)
-        cache_cost = (cache_creation / 1_000_000) * model_prices.get('cache_write_5m', 18.75)
-        cache_read_cost = (cache_read / 1_000_000) * model_prices.get('cache_read', 1.5)
+        input_cost = (input_tokens / 1_000_000) * model_prices.get('input', 5.0)
+        output_cost = (output_tokens / 1_000_000) * model_prices.get('output', 25.0)
+        cache_cost = (cache_creation / 1_000_000) * model_prices.get('cache_write_5m', 6.25)
+        cache_read_cost = (cache_read / 1_000_000) * model_prices.get('cache_read', 0.5)
         
         total_cost = input_cost + output_cost + cache_cost + cache_read_cost
         
@@ -442,10 +441,10 @@ class DatabaseRebuilder:
         
         # Return fallback pricing
         return self.prices.get('fallback_pricing', {
-            'input': 15.0,
-            'output': 75.0,
-            'cache_write_5m': 18.75,
-            'cache_read': 1.5
+            'input': 5.0,
+            'output': 25.0,
+            'cache_write_5m': 6.25,
+            'cache_read': 0.5
         })
 
 
